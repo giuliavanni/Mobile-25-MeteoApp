@@ -55,7 +55,4 @@
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
 
-    <!--
-    Se il progetto non ha bisogno della localizzazione, elimina la cartella values-it
-    -->
 </resources>
