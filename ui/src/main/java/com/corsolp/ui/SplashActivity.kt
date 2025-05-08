@@ -23,7 +23,7 @@ class SplashActivity : AppCompatActivity() {
 
 
         Handler().postDelayed({
-            val intent = Intent(this, HomepageActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             //Se voglio provare l'activity con la demo di richiesta permessi
             //val intent = Intent(this, MainActivity2::class.java)
             startActivity(intent)
