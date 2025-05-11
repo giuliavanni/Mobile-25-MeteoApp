@@ -8,7 +8,7 @@
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".Main3Activity"
+            android:name=".MainActivity2"
             android:exported="false"
             android:theme="@style/Theme.CorsoLPActivitiesFragments" />
         <activity
@@ -30,8 +30,11 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="YOUR_API_KEY" />
         -->
+        <meta-data
+            android:name="OPENWEATHER_API_KEY"
+            android:value="${OPENWEATHER_API_KEY}"/>
         <activity
-            android:name=".MainActivity2"
+            android:name=".Main3Activity"
             android:exported="false" />
         <activity
             android:name=".settings.SettingsActivity"
