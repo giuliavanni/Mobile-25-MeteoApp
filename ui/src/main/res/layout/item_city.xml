@@ -12,9 +12,17 @@
         android:textSize="16sp"
         android:text="Nome città" />
 
-    <Button
+    <View
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <ImageButton
         android:id="@+id/openMapButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/ic_earth"
         android:text="Mappa" />
+
+
 </LinearLayout>
