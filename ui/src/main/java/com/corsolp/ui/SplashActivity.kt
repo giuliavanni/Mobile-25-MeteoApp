@@ -6,8 +6,7 @@ import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.corsolp.ui.databinding.ActivitySplashBinding
-import com.corsolp.ui.homepage.HomepageActivity
-import com.corsolp.ui.map.MapsFragment
+import com.corsolp.ui.mainactivity.MainActivity
 
 class SplashActivity : AppCompatActivity() {
 
