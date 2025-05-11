@@ -17,6 +17,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <ImageView
+        android:id="@+id/weatherIconImageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_launcher_background"/>
+
     <TextView
         android:id="@+id/weatherResultText"
         android:text="Meteo: -"
@@ -32,10 +40,13 @@
         android:paddingTop="24dp"
         android:textStyle="bold" />
 
-    <ListView
-        android:id="@+id/savedCitiesListView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/savedCitiesRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"/>
+
+
+
 </LinearLayout>
 

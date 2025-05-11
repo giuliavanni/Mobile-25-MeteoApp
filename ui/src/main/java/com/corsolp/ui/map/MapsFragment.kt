@@ -26,72 +26,73 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MapsFragment : Fragment() {
 
-    companion object   {
-        private val LOCATION_PERMISSION_REQUEST_CODE = 100
-    }
-
+    // Definisci variabili per latitudine, longitudine e nome della città
     private lateinit var googleMap: GoogleMap
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+    private var cityName: String = "Località sconosciuta"
 
-
+    // Callback per la mappa
     private val callback = OnMapReadyCallback { map ->
         googleMap = map
-        val campus = LatLng(44.1478628616173, 12.235671186724646)
-        googleMap.addMarker(MarkerOptions().position(campus).title("Campus di Cesena"))
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(campus, 16f))
 
+        // Aggiungi il marker per la città
+        val cityLatLng = LatLng(latitude, longitude)
+        googleMap.addMarker(MarkerOptions().position(cityLatLng).title(cityName))
 
+        // Centra la mappa sulla città
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, 12f))
+
+        // Imposta il comportamento del bottone "centra sulla mia posizione"
         val centerButton = view?.findViewById<FloatingActionButton>(R.id.button_center_on_me)
         centerButton?.setOnClickListener {
             requestLocationPermission()
         }
-
-
     }
 
+    // onCreateView dove vengono recuperati i dati dal Bundle
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Recupera latitudine, longitudine e nome della città dal Bundle
+        arguments?.let {
+            latitude = it.getDouble("latitude")
+            longitude = it.getDouble("longitude")
+            cityName = it.getString("city_name") ?: "Località sconosciuta"
+        }
+
         return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Recupera il SupportMapFragment e ottieni la mappa
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
     }
-
-
 
     // Gestione dei permessi
     private fun requestLocationPermission() {
         val permission = Manifest.permission.ACCESS_FINE_LOCATION
 
         if (ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED) {
-            // ✅ Permesso già concesso
             enableLocationFeatures()
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permission)) {
-            // ℹ️ L’utente ha già negato una volta → mostriamo una spiegazione
             showRationaleDialog()
         } else {
-            // 🔄 Richiediamo direttamente il permesso
-            requestPermissions(
-                arrayOf(permission),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
+            requestPermissions(arrayOf(permission), LOCATION_PERMISSION_REQUEST_CODE)
         }
     }
 
+    // Mostra il dialogo per la richiesta del permesso
     private fun showRationaleDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle("Permesso necessario")
             .setMessage("Questa app ha bisogno della tua posizione per funzionare correttamente.")
             .setPositiveButton("OK") { _, _ ->
-                requestPermissions(
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    LOCATION_PERMISSION_REQUEST_CODE
-                )
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
             }
             .setNegativeButton("Annulla", null)
             .show()
@@ -107,32 +108,26 @@ class MapsFragment : Fragment() {
 
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // ✅ Permesso concesso
                 enableLocationFeatures()
             } else {
-                // ❌ Permesso negato, possiamo aprire le impostazioni se necessario
                 Toast.makeText(requireContext(), "Permesso negato, abilitalo nelle impostazioni", Toast.LENGTH_LONG).show()
             }
         }
     }
 
+    // Abilita le funzionalità di localizzazione
     private fun enableLocationFeatures() {
         if (::googleMap.isInitialized) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 googleMap.isMyLocationEnabled = true
                 centerMapOnUserLocation()
             }
         }
     }
 
-
+    // Centra la mappa sulla posizione dell'utente
     private fun centerMapOnUserLocation() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            // I permessi non sono stati concessi, quindi esco dalla funzione
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return
         }
 
@@ -148,4 +143,18 @@ class MapsFragment : Fragment() {
         }
     }
 
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 100
+
+        // Funzione per creare un'istanza del fragment con i dati della città
+        fun newInstance(latitude: Double, longitude: Double, cityName: String): MapsFragment {
+            val fragment = MapsFragment()
+            val args = Bundle()
+            args.putDouble("latitude", latitude)
+            args.putDouble("longitude", longitude)
+            args.putString("city_name", cityName)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 }
