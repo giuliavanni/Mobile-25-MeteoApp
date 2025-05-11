@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val apiKey = BuildConfig.OPENWEATHER_API_KEY
-                val url = URL("https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric")
+                val url = URL("https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric&lang=it")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
 
