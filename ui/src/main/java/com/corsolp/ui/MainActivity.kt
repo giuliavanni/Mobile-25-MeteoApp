@@ -15,9 +15,9 @@ import android.widget.Toast
 
 import com.corsolp.data.database.AppDatabase
 import com.corsolp.data.database.CityEntity
-import com.corsolp.data.database.CityDao
+
 import com.corsolp.ui.databinding.ActivityMainBinding
-import kotlinx.coroutines.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,9 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var database: AppDatabase
-    private lateinit var adapter: ArrayAdapter<String>
-    private val savedCities = mutableListOf<String>()
-
+    private lateinit var adapter: ArrayAdapter<CityEntity>
+    private val savedCities = mutableListOf<CityEntity>()
 
     //private val apiKey = "OPENWEATHER_API_KEY"
     private val apiHost = "open-weather13.p.rapidapi.com"
@@ -63,6 +62,8 @@ class MainActivity : AppCompatActivity() {
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, savedCities)
         binding.savedCitiesListView.adapter = adapter
 
+        loadSavedCities()
+
         binding.searchButton.setOnClickListener {
             val city = binding.cityEditText.text.toString().trim()
             if (city.isNotEmpty()) {
@@ -74,19 +75,58 @@ class MainActivity : AppCompatActivity() {
 
         binding.savedCitiesListView.setOnItemClickListener { _, _, position, _ ->
             val selectedCity = savedCities[position]
-            binding.cityEditText.setText(selectedCity)
-            val cityNameOnly = selectedCity.substringBefore(" (")
-            getWeather(cityNameOnly)
+            //binding.cityEditText.setText(selectedCity)
+            getWeather(selectedCity.name, selectedCity.latitude, selectedCity.longitude)
         }
 
-        loadSavedCities()
+        binding.savedCitiesListView.setOnItemLongClickListener { _, _, position, _ ->
+            // Ottieni la città selezionata
+            val cityToDelete = savedCities[position]
+
+            // Esegui la cancellazione in un Coroutine
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    // Cancella la città dal database
+                    database.cityDao().deleteCity(cityToDelete)
+
+                    // Rimuovi la città dalla lista 'savedCities'
+                    val updatedCities = database.cityDao().getAllCities()
+
+                    // Aggiorna l'interfaccia utente sul thread principale
+                    withContext(Dispatchers.Main) {
+                        savedCities.clear()
+                        savedCities.addAll(updatedCities)
+                        // Notifica l'adapter di aggiornare la lista
+                        //(binding.savedCitiesListView.adapter as ArrayAdapter<CityEntity>).notifyDataSetChanged()
+                        val adapter = ArrayAdapter(
+                            this@MainActivity,
+                            android.R.layout.simple_list_item_1,
+                            savedCities.map { it.name }
+                        )
+                        binding.savedCitiesListView.adapter = adapter
+                        Toast.makeText(applicationContext, "Città eliminata", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(applicationContext, "Errore nella cancellazione: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            true
+        }
+
+        (binding.savedCitiesListView.adapter as? ArrayAdapter<CityEntity>)?.let {
+            it.notifyDataSetChanged()
+        }
+
     }
 
-    private fun getWeather(city: String) {
+    private fun getWeather(cityName: String, latitude: Double, longitude: Double) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val apiKey = BuildConfig.OPENWEATHER_API_KEY
-                val url = URL("https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric")
+                val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey&units=metric")
 
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
@@ -163,12 +203,17 @@ class MainActivity : AppCompatActivity() {
     private fun loadSavedCities() {
         CoroutineScope(Dispatchers.IO).launch {
             val cities = database.cityDao().getAllCities()
-            val cityNames = cities.map { "${it.name} (${it.latitude}, ${it.longitude})" }
+            //val cityNames = cities.map { "${it.name} (${it.latitude}, ${it.longitude})" }
+            savedCities.clear()
+            savedCities.addAll(cities)
 
             withContext(Dispatchers.Main) {
-                savedCities.clear()
-                savedCities.addAll(cityNames)
-                adapter.notifyDataSetChanged()
+                val adapter = ArrayAdapter(
+                    this@MainActivity,
+                    android.R.layout.simple_list_item_1,
+                    savedCities.map { it.name }
+                )
+                binding.savedCitiesListView.adapter = adapter
             }
         }
     }
