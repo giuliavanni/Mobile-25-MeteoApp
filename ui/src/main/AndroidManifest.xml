@@ -5,6 +5,9 @@
 
     <application>
         <activity
+            android:name=".forecast.ForecastActivity"
+            android:exported="false" />
+        <activity
             android:name=".mainactivity.MainActivity"
             android:exported="false" />
         <activity
@@ -32,10 +35,8 @@
         -->
         <meta-data
             android:name="OPENWEATHER_API_KEY"
-            android:value="${OPENWEATHER_API_KEY}"/>
-        <activity
-            android:name=".Main3Activity"
-            android:exported="false" />
+            android:value="${OPENWEATHER_API_KEY}" />
+
         <activity
             android:name=".settings.SettingsActivity"
             android:exported="false" />
