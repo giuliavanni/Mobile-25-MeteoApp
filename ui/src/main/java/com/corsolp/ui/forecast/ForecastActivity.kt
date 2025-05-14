@@ -1,6 +1,7 @@
 package com.corsolp.ui.forecast
 
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ class ForecastActivity : AppCompatActivity() {
     private lateinit var forecastRecyclerView: RecyclerView
     private lateinit var forecastAdapter: ForecastAdapter
     private lateinit var viewModel: ForecastViewModel
+    private lateinit var cityNameTextView: TextView
 
     private lateinit var city: String
 
@@ -27,6 +29,9 @@ class ForecastActivity : AppCompatActivity() {
         forecastRecyclerView.adapter = forecastAdapter
 
         city = intent.getStringExtra("city_name") ?: ""
+
+        cityNameTextView = findViewById(R.id.cityNameTextView)
+        cityNameTextView.text = getString(R.string.city_name_format, city)
 
         if (city.isEmpty()) {
             Toast.makeText(this, "Nessuna città ricevuta.", Toast.LENGTH_SHORT).show()

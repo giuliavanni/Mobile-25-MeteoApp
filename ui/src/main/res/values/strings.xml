@@ -12,6 +12,8 @@
     <string name="hotel">Hotel</string>
     <string name="apartment">Apartment</string>
     <string name="btn_map">Map</string>
+    
+    <string name="city_name_format">📍 %1$s</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
