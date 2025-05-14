@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.corsolp.data.database.CityEntity
 import com.corsolp.ui.BuildConfig
+import com.corsolp.ui.forecast.ForecastActivity
 import com.corsolp.ui.databinding.ActivityMainBinding
 import com.corsolp.ui.map.MapActivity
 import kotlinx.coroutines.*
@@ -43,8 +44,13 @@ class MainActivity : AppCompatActivity() {
                 viewModel.deleteCity(city)
                 Toast.makeText(this, "Città eliminata", Toast.LENGTH_SHORT).show()
             },
-            onMapClick = { city -> openMapForCity(city)}
-                )
+            onMapClick = { city -> openMapForCity(city)},
+            onForecastClick = { city ->
+                val intent = Intent(this, ForecastActivity::class.java)
+                intent.putExtra("city_name", city.name)
+                startActivity(intent)
+            }
+        )
 
         binding.savedCitiesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.savedCitiesRecyclerView.adapter = cityAdapter
@@ -68,6 +74,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Inserisci una città", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
     private fun getWeather(cityName: String, latitude: Double, longitude: Double) {
