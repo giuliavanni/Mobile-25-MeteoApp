@@ -11,16 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.corsolp.domain.di.UseCaseProvider
 import com.corsolp.ui.databinding.ActivityHomepageBinding
 import kotlinx.coroutines.launch
-
 import android.content.Intent
-import android.view.View
-import android.widget.Button
-import android.widget.FrameLayout
-import androidx.recyclerview.widget.RecyclerView
-import com.corsolp.ui.R
 import com.corsolp.ui.map.MapActivity
-import com.corsolp.ui.map.MapsFragment
-import com.google.android.gms.maps.MapFragment
 
 
 class HomepageActivity : AppCompatActivity() {
