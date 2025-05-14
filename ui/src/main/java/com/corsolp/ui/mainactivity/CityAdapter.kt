@@ -12,12 +12,14 @@ class CityAdapter(
     private val cities: List<CityEntity>,
     private val onItemClick: (CityEntity) -> Unit,
     private val onItemLongClick: (CityEntity) -> Unit,
-    private val onMapClick: (CityEntity) -> Unit
+    private val onMapClick: (CityEntity) -> Unit,
+    private val onForecastClick: (CityEntity) -> Unit
 ) : RecyclerView.Adapter<CityAdapter.CityViewHolder>() {
 
     inner class CityViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val cityNameTextView: TextView = itemView.findViewById(R.id.cityNameTextView)
         private val mapButton: View = itemView.findViewById(R.id.openMapButton)
+        private val forecastButton: View = itemView.findViewById(R.id.buttonForecast)
 
         fun bind(city: CityEntity) {
             cityNameTextView.text = city.name
@@ -34,6 +36,11 @@ class CityAdapter(
             mapButton.setOnClickListener {
                 onMapClick(city)
             }
+
+            forecastButton.setOnClickListener {
+                onForecastClick(city)
+            }
+
         }
     }
 
