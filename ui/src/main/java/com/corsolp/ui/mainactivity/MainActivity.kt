@@ -96,9 +96,9 @@ class MainActivity : AppCompatActivity() {
                     val condition = json.getJSONArray("weather").getJSONObject(0).getString("description")
                     val cityName = json.getString("name")
 
-                    // Recupera l'icona meteo (es. "01d", "02n")
+                    // Recupera l'icona meteo
                     val iconCode = json.getJSONArray("weather").getJSONObject(0).getString("icon")
-                    val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png" // URL dell'icona
+                    val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png"
 
                     // Imposta il risultato meteo nella TextView
                     val result = "$cityName: %.1f°C, %s".format(temp, condition)
@@ -147,6 +147,10 @@ class MainActivity : AppCompatActivity() {
                     val lat = coord.getDouble("lat")
                     val lon = coord.getDouble("lon")
 
+                    val iconCode = json.getJSONArray("weather").getJSONObject(0).getString("icon")
+                    val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png"
+
+
                     val cityEntity = CityEntity(name = cityName, latitude = lat, longitude = lon)
                     viewModel.saveCity(cityEntity)
 
@@ -154,6 +158,12 @@ class MainActivity : AppCompatActivity() {
 
                     withContext(Dispatchers.Main) {
                         binding.weatherResultText.text = result
+
+                        // Mostra e carica l'icona meteo
+                        binding.weatherIconImageView.visibility = View.VISIBLE
+                        Glide.with(this@MainActivity)
+                            .load(iconUrl)
+                            .into(binding.weatherIconImageView)
                     }
                 } else {
                     withContext(Dispatchers.Main) {
