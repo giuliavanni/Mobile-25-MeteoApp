@@ -9,18 +9,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.corsolp.ui.R
-import com.google.android.gms.location.LocationServices
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+
 
 
 class MapsFragment : Fragment() {
@@ -64,28 +61,6 @@ class MapsFragment : Fragment() {
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-
-        val centerButton = view.findViewById<FloatingActionButton>(R.id.button_center_on_me)
-        centerButton?.setOnClickListener {
-            centerMapOnUserLocation()
-        }
-    }
-
-    private fun centerMapOnUserLocation() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return
-        }
-
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            if (location != null) {
-                val userLatLng = LatLng(location.latitude, location.longitude)
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 17f))
-            } else {
-                Toast.makeText(requireContext(), "Posizione non disponibile", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     companion object {
@@ -100,4 +75,3 @@ class MapsFragment : Fragment() {
         }
     }
 }
-
