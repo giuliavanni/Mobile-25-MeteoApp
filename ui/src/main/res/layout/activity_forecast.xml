@@ -9,14 +9,14 @@
         android:id="@+id/textViewForecast"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Previsioni"
+        android:text="@string/forecast"
         android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/cityNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nome città"
+        android:text="@string/city_name_format"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_margin="16dp"
