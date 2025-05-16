@@ -20,6 +20,19 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <string name="city_insert">Insert the city: </string>
+    <string name="city_search">Search</string>
+    <string name="city_saved">Saved cities: </string>
+
+    <string name="forecast">Forecast: </string>
+
+    <string name="language">Choose the language: </string>
+    <string name="theme">Choose the theme mode: </string>
+    <string name="dark">Dark </string>
+    <string name="light">Light </string>
+    <string name="save_settings">Save settings </string>
+
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus

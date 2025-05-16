@@ -21,6 +21,20 @@
     <string name="next">Prossimo</string>
     <string name="previous">Precedente</string>
 
+    <string name="city_insert">Inserisci la città</string>
+    <string name="city_search">Cerca</string>
+    <string name="city_saved">Città salvate: </string>
+
+    <string name="forecast">Previsioni: </string>
+
+    <string name="language">Scegli la lingua: </string>
+    <string name="theme">Scegli il tema: </string>
+    <string name="dark">Scuro </string>
+    <string name="light">Chiaro </string>
+    <string name="save_settings">Salva le impostazioni </string>
+
+
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
