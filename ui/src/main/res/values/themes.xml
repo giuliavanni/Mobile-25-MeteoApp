@@ -3,6 +3,15 @@
     <style name="Base.Theme.CorsoLPActivitiesFragments" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Colori principali per tema chiaro -->
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="android:colorBackground">@color/white</item>
+        <item name="colorOnBackground">@color/black</item>
+
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
     </style>
 
     <style name="Theme.CorsoLPActivitiesFragments" parent="Base.Theme.CorsoLPActivitiesFragments" />
