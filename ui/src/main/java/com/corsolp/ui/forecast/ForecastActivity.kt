@@ -48,7 +48,7 @@ class ForecastActivity : AppCompatActivity() {
             Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
         }
 
-        viewModel.loadForecast(city)
+        viewModel.loadForecast(city, this)
     }
 }
 
