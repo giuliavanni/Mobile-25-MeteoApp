@@ -1,10 +1,12 @@
 package com.corsolp.ui.forecast
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.corsolp.data.ForecastItem
+import com.corsolp.domain.settings.SettingsManager
 import com.corsolp.ui.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,6 +19,7 @@ import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+
 class ForecastViewModel : ViewModel() {
 
     private val apiKey = BuildConfig.OPENWEATHER_API_KEY
@@ -27,12 +30,14 @@ class ForecastViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
 
-    fun loadForecast(city: String) {
+    fun loadForecast(city: String, context: Context) {
+
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                val lang = SettingsManager.getLanguage(context)
                 val encodedCity = URLEncoder.encode(city, "UTF-8")
                 val urlString =
-                    "https://api.openweathermap.org/data/2.5/forecast?q=$encodedCity&appid=$apiKey&units=metric&lang=it"
+                    "https://api.openweathermap.org/data/2.5/forecast?q=$encodedCity&appid=$apiKey&units=metric&lang=$lang"
 
                 val url = URL(urlString)
                 val connection = url.openConnection() as HttpURLConnection
