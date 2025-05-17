@@ -2,9 +2,13 @@ package com.corsolp.ui.mainactivity
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -14,16 +18,21 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.corsolp.data.database.CityEntity
+import com.corsolp.domain.settings.SettingsManager
 import com.corsolp.ui.BuildConfig
+import com.corsolp.ui.R
 import com.corsolp.ui.forecast.ForecastActivity
 import com.corsolp.ui.databinding.ActivityMainBinding
 import com.corsolp.ui.map.MapActivity
+import com.corsolp.ui.settings.SettingsActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applySavedLanguage()
         super.onCreate(savedInstanceState)
 
         // ViewBinding
@@ -44,6 +54,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.weatherIconImageView.visibility = View.GONE
 
+        //Toolbar
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         // RecyclerView
         cityAdapter = CityAdapter(savedCities,
@@ -151,12 +164,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     private fun getWeather(cityName: String, latitude: Double, longitude: Double) {
+        val lang = SettingsManager.getLanguage(this)
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val apiKey = BuildConfig.OPENWEATHER_API_KEY
-                val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey&units=metric")
+                val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey&units=metric&lang=$lang")
 
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
@@ -178,11 +206,18 @@ class MainActivity : AppCompatActivity() {
                     // Imposta il risultato meteo nella TextView
                     val result = "$cityName: %.1f°C, %s".format(temp, condition)
 
+
                     // Aggiorna l'interfaccia utente
                     withContext(Dispatchers.Main) {
-                        binding.weatherResultText.text = result
+                        //binding.weatherResultText.text = result
+                        binding.textCityName.text = cityName
+                        binding.textTemperature.text = getString(R.string.temperature, temp)
+                        binding.textDescription.text = condition
 
                         binding.weatherIconImageView.visibility = View.VISIBLE
+                        binding.textCityName.visibility = View.VISIBLE
+                        binding.textTemperature.visibility = View.VISIBLE
+                        binding.textDescription.visibility = View.VISIBLE
 
                         // Carica l'icona meteo
                         Glide.with(this@MainActivity)
@@ -191,12 +226,12 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        binding.weatherResultText.text = "Errore HTTP: $responseCode"
+                        Snackbar.make(binding.root, getString(R.string.error_http, responseCode), Snackbar.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    binding.weatherResultText.text = "Errore: ${e.message}"
+                    Snackbar.make(binding.root, getString(R.string.error_generic, e.message ?: "Errore sconosciuto"), Snackbar.LENGTH_LONG).show()
                 }
             }
         }
@@ -204,10 +239,11 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun getWeatherAndSave(city: String) {
+        val lang = SettingsManager.getLanguage(this)
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val apiKey = BuildConfig.OPENWEATHER_API_KEY
-                val url = URL("https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric&lang=it")
+                val url = URL("https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric&lang=$lang")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
 
@@ -232,7 +268,14 @@ class MainActivity : AppCompatActivity() {
                     val result = "$cityName: %.1f°C, %s".format(temp, condition)
 
                     withContext(Dispatchers.Main) {
-                        binding.weatherResultText.text = result
+                        //binding.weatherResultText.text = result
+                        binding.textCityName.text = cityName
+                        binding.textTemperature.text = getString(R.string.temperature, temp)
+                        binding.textDescription.text = condition
+
+                        binding.textCityName.visibility = View.VISIBLE
+                        binding.textTemperature.visibility = View.VISIBLE
+                        binding.textDescription.visibility = View.VISIBLE
 
                         // Mostra e carica l'icona meteo
                         binding.weatherIconImageView.visibility = View.VISIBLE
@@ -242,12 +285,12 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        binding.weatherResultText.text = "Errore HTTP: $responseCode"
+                        Snackbar.make(binding.root, getString(R.string.error_http, responseCode), Snackbar.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    binding.weatherResultText.text = "Errore: ${e.message}"
+                    Snackbar.make(binding.root, getString(R.string.error_generic, e.message ?: "Errore sconosciuto"), Snackbar.LENGTH_LONG).show()
                 }
             }
         }
@@ -260,5 +303,17 @@ class MainActivity : AppCompatActivity() {
             putExtra("longitude", city.longitude)
         }
         startActivity(intent)
+    }
+
+    private fun applySavedLanguage() {
+        val lang = SettingsManager.getLanguage(this)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+
+        val config = Configuration(resources.configuration)
+        config.setLocale(locale)
+
+        // Applica la nuova configurazione
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 }
