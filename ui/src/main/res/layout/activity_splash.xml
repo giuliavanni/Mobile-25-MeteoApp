@@ -1,20 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:background="@drawable/sky">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:scaleType="fitCenter"
-        android:src="@drawable/unibo"
-        />
+        android:background="@android:color/darker_gray"
+        android:alpha="0.5" />
 
-</LinearLayout>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimationView"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"
+        app:lottie_fileName="meteo2.json"
+        android:layout_centerHorizontal="true"
+        android:repeatMode="reverse"
+        android:repeatCount="infinite"
+        app:lottie_speed="0.5"/>
+
+    <TextView
+        android:id="@+id/appNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textSize="@dimen/txt_size_title"
+        android:textColor="@android:color/white"
+        android:fontFamily="@font/lobster"
+        android:layout_below="@id/lottieAnimationView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/spacing_medium"/>
+
+</RelativeLayout>
