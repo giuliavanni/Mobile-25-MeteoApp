@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/city_name"
-            android:textSize="20sp"
+            android:textSize="@dimen/txt_size_title"
             android:textStyle="bold"
             android:visibility="gone"/>
 
@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/temperature"
-            android:textSize="18sp"
+            android:textSize="@dimen/txt_size_xlarge"
             android:textColor="?android:textColorPrimary"
             android:visibility="gone"/>
 
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/weather_description"
-            android:textSize="16sp"
+            android:textSize="@dimen/txt_size_large"
             android:textColor="?android:textColorPrimary"
             android:visibility="gone"/>
 
@@ -80,7 +80,9 @@
         android:id="@+id/searchButton"
         android:text="@string/city_search"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:layout_gravity="end"/>
 
     <TextView
         android:layout_width="match_parent"
