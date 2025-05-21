@@ -2,7 +2,6 @@ package com.corsolp.ui.mainactivity
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -17,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.corsolp.data.WeatherInfo
 import com.corsolp.data.database.CityEntity
 import com.corsolp.domain.settings.SettingsManager
 import com.corsolp.ui.BuildConfig
@@ -29,6 +29,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
+import androidx.lifecycle.lifecycleScope
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -43,7 +44,6 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         applySavedLanguage()
@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         // ViewBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         binding.weatherIconImageView.visibility = View.GONE
 
         //Toolbar
@@ -179,121 +180,97 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getWeather(cityName: String, latitude: Double, longitude: Double) {
+    private fun getWeather(cityName: String, lat: Double, lon: Double) {
         val lang = SettingsManager.getLanguage(this)
-        CoroutineScope(Dispatchers.IO).launch {
+        val url =
+            "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=${BuildConfig.OPENWEATHER_API_KEY}&units=metric&lang=$lang"
+
+        lifecycleScope.launch {
+            fetchWeatherData(
+                url,
+                onSuccess = { info -> updateUI(info) },
+                onError = { error -> showError(error) }
+            )
+        }
+    }
+
+    private fun getWeatherAndSave(city: String) {
+        val lang = SettingsManager.getLanguage(this)
+        val url =
+            "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=${BuildConfig.OPENWEATHER_API_KEY}&units=metric&lang=$lang"
+
+        lifecycleScope.launch {
+            fetchWeatherData(
+                url,
+                onSuccess = { info ->
+                    viewModel.saveCity(CityEntity(info.cityName, info.latitude, info.longitude))
+                    updateUI(info)
+                },
+                onError = { error -> showError(error) }
+            )
+        }
+    }
+
+    private suspend fun fetchWeatherData(
+        url: String,
+        onSuccess: suspend (WeatherInfo) -> Unit,
+        onError: suspend (String) -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
             try {
-                val apiKey = BuildConfig.OPENWEATHER_API_KEY
-                val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey&units=metric&lang=$lang")
-
-                val connection = url.openConnection() as HttpURLConnection
+                val connection = URL(url).openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
-
                 val responseCode = connection.responseCode
+
                 if (responseCode == 200) {
                     val response = connection.inputStream.bufferedReader().use { it.readText() }
                     val json = JSONObject(response)
-
-                    // Recupera le informazioni meteo
-                    val temp = json.getJSONObject("main").getDouble("temp")
-                    val condition = json.getJSONArray("weather").getJSONObject(0).getString("description")
-                    val cityName = json.getString("name")
-
-                    // Recupera l'icona meteo
-                    val iconCode = json.getJSONArray("weather").getJSONObject(0).getString("icon")
-                    val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png"
-
-                    // Imposta il risultato meteo nella TextView
-                    val result = "$cityName: %.1f°C, %s".format(temp, condition)
-
-
-                    // Aggiorna l'interfaccia utente
-                    withContext(Dispatchers.Main) {
-                        //binding.weatherResultText.text = result
-                        binding.textCityName.text = cityName
-                        binding.textTemperature.text = getString(R.string.temperature, temp)
-                        binding.textDescription.text = condition
-
-                        binding.weatherIconImageView.visibility = View.VISIBLE
-                        binding.textCityName.visibility = View.VISIBLE
-                        binding.textTemperature.visibility = View.VISIBLE
-                        binding.textDescription.visibility = View.VISIBLE
-
-                        // Carica l'icona meteo
-                        Glide.with(this@MainActivity)
-                            .load(iconUrl)
-                            .into(binding.weatherIconImageView)
-                    }
+                    val weatherInfo = parseWeatherJson(json)
+                    withContext(Dispatchers.Main) { onSuccess(weatherInfo) }
                 } else {
                     withContext(Dispatchers.Main) {
-                        Snackbar.make(binding.root, getString(R.string.error_http, responseCode), Snackbar.LENGTH_LONG).show()
+                        onError(getString(R.string.error_http, responseCode))
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Snackbar.make(binding.root, getString(R.string.error_generic, e.message ?: "Errore sconosciuto"), Snackbar.LENGTH_LONG).show()
+                    onError(getString(R.string.error_generic, e.message ?: "Errore sconosciuto"))
                 }
             }
         }
     }
 
 
-    private fun getWeatherAndSave(city: String) {
-        val lang = SettingsManager.getLanguage(this)
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val apiKey = BuildConfig.OPENWEATHER_API_KEY
-                val url = URL("https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric&lang=$lang")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
+    private fun parseWeatherJson(json: JSONObject): WeatherInfo {
+        val cityName = json.getString("name")
+        val temp = json.getJSONObject("main").getDouble("temp")
+        val condition = json.getJSONArray("weather").getJSONObject(0).getString("description")
+        val iconCode = json.getJSONArray("weather").getJSONObject(0).getString("icon")
+        val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png"
+        val coord = json.getJSONObject("coord")
+        val lat = coord.getDouble("lat")
+        val lon = coord.getDouble("lon")
 
-                val responseCode = connection.responseCode
-                if (responseCode == 200) {
-                    val response = connection.inputStream.bufferedReader().use { it.readText() }
-                    val json = JSONObject(response)
-                    val temp = json.getJSONObject("main").getDouble("temp")
-                    val condition = json.getJSONArray("weather").getJSONObject(0).getString("description")
-                    val cityName = json.getString("name")
-                    val coord = json.getJSONObject("coord")
-                    val lat = coord.getDouble("lat")
-                    val lon = coord.getDouble("lon")
+        return WeatherInfo(cityName, temp, condition, iconUrl, lat, lon)
+    }
 
-                    val iconCode = json.getJSONArray("weather").getJSONObject(0).getString("icon")
-                    val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png"
+    private fun updateUI(info: WeatherInfo) {
+        binding.textCityName.text = info.cityName
+        binding.textTemperature.text = getString(R.string.temperature, info.temperature)
+        binding.textDescription.text = info.description
 
+        binding.textCityName.visibility = View.VISIBLE
+        binding.textTemperature.visibility = View.VISIBLE
+        binding.textDescription.visibility = View.VISIBLE
+        binding.weatherIconImageView.visibility = View.VISIBLE
 
-                    val cityEntity = CityEntity(name = cityName, latitude = lat, longitude = lon)
-                    viewModel.saveCity(cityEntity)
+        Glide.with(this)
+            .load(info.iconUrl)
+            .into(binding.weatherIconImageView)
+    }
 
-                    val result = "$cityName: %.1f°C, %s".format(temp, condition)
-
-                    withContext(Dispatchers.Main) {
-                        //binding.weatherResultText.text = result
-                        binding.textCityName.text = cityName
-                        binding.textTemperature.text = getString(R.string.temperature, temp)
-                        binding.textDescription.text = condition
-
-                        binding.textCityName.visibility = View.VISIBLE
-                        binding.textTemperature.visibility = View.VISIBLE
-                        binding.textDescription.visibility = View.VISIBLE
-
-                        // Mostra e carica l'icona meteo
-                        binding.weatherIconImageView.visibility = View.VISIBLE
-                        Glide.with(this@MainActivity)
-                            .load(iconUrl)
-                            .into(binding.weatherIconImageView)
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Snackbar.make(binding.root, getString(R.string.error_http, responseCode), Snackbar.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Snackbar.make(binding.root, getString(R.string.error_generic, e.message ?: "Errore sconosciuto"), Snackbar.LENGTH_LONG).show()
-                }
-            }
-        }
+    private fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     private fun openMapForCity(city: CityEntity) {
@@ -315,5 +292,9 @@ class MainActivity : AppCompatActivity() {
 
         // Applica la nuova configurazione
         resources.updateConfiguration(config, resources.displayMetrics)
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 }
