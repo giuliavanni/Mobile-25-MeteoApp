@@ -31,6 +31,9 @@
     <string name="error_generic">Errore: %1$s</string>
 
     <string name="forecast">Previsioni: </string>
+    <string name="pressure_format">Pressione: %1$d hPa</string>
+    <string name="humidity_format">Umidità: %1$d%%</string>
+    <string name="wind_format">Velocità del vento: %1$.1f m/s</string>
 
     <string name="language">Scegli la lingua: </string>
     <string name="theme">Scegli il tema: </string>

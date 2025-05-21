@@ -19,11 +19,17 @@ class ForecastAdapter(
         private val tempTextView: TextView = itemView.findViewById(R.id.tempTextView)
         private val descTextView: TextView = itemView.findViewById(R.id.descTextView)
         private val iconImageView: ImageView = itemView.findViewById(R.id.iconImageView)
+        private val humidityTextView: TextView = itemView.findViewById(R.id.textHumidity)
+        private val pressureTextView: TextView = itemView.findViewById(R.id.textPressure)
+        private val windTextView: TextView = itemView.findViewById(R.id.textWind)
 
         fun bind(forecast: ForecastItem) {
             dateTextView.text = forecast.date
             tempTextView.text = itemView.context.getString(R.string.temperature_format, forecast.temp)
             descTextView.text = forecast.description
+            humidityTextView.text = itemView.context.getString(R.string.humidity_format, forecast.humidity)
+            pressureTextView.text = itemView.context.getString(R.string.pressure_format, forecast.pressure)
+            windTextView.text = itemView.context.getString(R.string.wind_format, forecast.windSpeed)
 
             Glide.with(itemView)
                 .load(forecast.iconUrl)

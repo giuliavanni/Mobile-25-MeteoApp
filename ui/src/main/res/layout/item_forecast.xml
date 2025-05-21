@@ -40,7 +40,8 @@
                 android:textSize="16sp"
                 android:textColor="#333333"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="@string/temperature_format"/>
 
             <TextView
                 android:id="@+id/descTextView"
@@ -48,6 +49,25 @@
                 android:textColor="#666666"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/textHumidity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/humidity_format"/>
+
+            <TextView
+                android:id="@+id/textPressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pressure_format"/>
+
+            <TextView
+                android:id="@+id/textWind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wind_format"/>
+
         </LinearLayout>
     </LinearLayout>
 

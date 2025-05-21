@@ -81,9 +81,12 @@ class ForecastViewModel : ViewModel() {
             val desc = item.getJSONArray("weather")
                 .getJSONObject(0)
                 .getString("description")
+            val humidity = item.getJSONObject("main").getInt("humidity")
+            val pressure = item.getJSONObject("main").getInt("pressure")
+            val windSpeed = item.getJSONObject("wind").getDouble("speed")
             val iconCode = item.getJSONArray("weather").getJSONObject(0).getString("icon")
             val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png"
-            list.add(ForecastItem(date, temp, desc, iconUrl))
+            list.add(ForecastItem(date, temp, desc, iconUrl, humidity, pressure, windSpeed))
         }
 
         return list

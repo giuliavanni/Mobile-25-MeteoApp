@@ -31,6 +31,9 @@
 
 
     <string name="forecast">Forecast: </string>
+    <string name="pressure_format">Pressure %1$d hPa</string>
+    <string name="humidity_format">Humidity: %1$d%%</string>
+    <string name="wind_format">Wind speed %1$.1f m/s</string>
 
     <string name="language">Choose the language: </string>
     <string name="theme">Choose the theme mode: </string>
