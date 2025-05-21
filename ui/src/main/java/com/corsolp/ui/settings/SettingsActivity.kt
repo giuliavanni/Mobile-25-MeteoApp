@@ -1,6 +1,8 @@
 package com.corsolp.ui.settings
 
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
@@ -20,6 +22,19 @@ import java.util.Locale
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
+
+    override fun attachBaseContext(newBase: Context) {
+        val lang = SettingsManager.getLanguage(newBase)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+
+        val config = Configuration()
+        config.setLocale(locale)
+
+        val newContext = newBase.createConfigurationContext(config)
+        super.attachBaseContext(newContext)
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,9 +64,8 @@ class SettingsActivity : AppCompatActivity() {
             SettingsManager.setTheme(this, selectedTheme)
 
             applyTheme(selectedTheme)
-            applyLanguage(selectedLang)
 
-            // Ricarica l'activity per applicare la nuova lingua
+            // Ricarica l'activity
             recreate()
 
             Toast.makeText(this, "Impostazioni salvate!", Toast.LENGTH_SHORT).show()
@@ -71,14 +85,6 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun applyLanguage(language: String) {
-        // Applicazione della lingua direttamente nel contesto
-        val locale = Locale(language)
-        Locale.setDefault(locale)
-        val config = resources.configuration
-        config.setLocale(locale)
-        resources.updateConfiguration(config, resources.displayMetrics)
-    }
 }
 
 

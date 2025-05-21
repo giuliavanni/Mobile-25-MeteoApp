@@ -2,6 +2,7 @@ package com.corsolp.ui.mainactivity
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -44,8 +45,21 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    override fun attachBaseContext(newBase: Context) {
+        val lang = SettingsManager.getLanguage(newBase)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+
+        val config = Configuration()
+        config.setLocale(locale)
+
+        val newContext = newBase.createConfigurationContext(config)
+        super.attachBaseContext(newContext)
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        applySavedLanguage()
+
         super.onCreate(savedInstanceState)
 
         // ViewBinding
@@ -279,18 +293,6 @@ class MainActivity : AppCompatActivity() {
             putExtra("longitude", city.longitude)
         }
         startActivity(intent)
-    }
-
-    private fun applySavedLanguage() {
-        val lang = SettingsManager.getLanguage(this)
-        val locale = Locale(lang)
-        Locale.setDefault(locale)
-
-        val config = Configuration(resources.configuration)
-        config.setLocale(locale)
-
-        // Applica la nuova configurazione
-        resources.updateConfiguration(config, resources.displayMetrics)
     }
 
     companion object {

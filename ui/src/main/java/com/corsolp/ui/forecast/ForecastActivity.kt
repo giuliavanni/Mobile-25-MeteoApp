@@ -1,5 +1,7 @@
 package com.corsolp.ui.forecast
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -7,7 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.corsolp.domain.settings.SettingsManager
 import com.corsolp.ui.R
+import java.util.Locale
 
 
 class ForecastActivity : AppCompatActivity() {
@@ -18,6 +22,19 @@ class ForecastActivity : AppCompatActivity() {
     private lateinit var cityNameTextView: TextView
 
     private lateinit var city: String
+
+    override fun attachBaseContext(newBase: Context) {
+        val lang = SettingsManager.getLanguage(newBase)
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+
+        val config = Configuration()
+        config.setLocale(locale)
+
+        val newContext = newBase.createConfigurationContext(config)
+        super.attachBaseContext(newContext)
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
