@@ -22,7 +22,7 @@ class ForecastAdapter(
 
         fun bind(forecast: ForecastItem) {
             dateTextView.text = forecast.date
-            tempTextView.text = "${forecast.temp}°C"
+            tempTextView.text = itemView.context.getString(R.string.temperature_format, forecast.temp)
             descTextView.text = forecast.description
 
             Glide.with(itemView)

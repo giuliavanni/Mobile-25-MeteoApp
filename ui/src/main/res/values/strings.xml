@@ -24,7 +24,7 @@
     <string name="city_search">Search</string>
     <string name="city_saved">Saved cities: </string>
     <string name="city_name">City name</string>
-    <string name="temperature">%.1f°C</string>
+    <string name="temperature_format">%1$d°C</string>
     <string name="weather_description">Weather description</string>
     <string name="error_http">Error HTTP: %1$d</string>
     <string name="error_generic">Error: %1$s</string>

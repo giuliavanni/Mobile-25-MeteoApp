@@ -269,7 +269,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateUI(info: WeatherInfo) {
         binding.textCityName.text = info.cityName
-        binding.textTemperature.text = getString(R.string.temperature, info.temperature)
+        binding.textTemperature.text = getString(R.string.temperature_format, info.temperature)
         binding.textDescription.text = info.description
 
         binding.textCityName.visibility = View.VISIBLE

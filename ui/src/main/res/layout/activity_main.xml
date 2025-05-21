@@ -54,7 +54,7 @@
             android:id="@+id/textTemperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/temperature"
+            android:text="@string/temperature_format"
             android:textSize="@dimen/txt_size_xlarge"
             android:textColor="?android:textColorPrimary"
             android:visibility="gone"/>
