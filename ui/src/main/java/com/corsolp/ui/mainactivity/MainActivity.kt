@@ -27,7 +27,6 @@ import com.corsolp.ui.map.MapActivity
 import com.corsolp.ui.settings.SettingsActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import androidx.lifecycle.lifecycleScope
 import org.json.JSONObject
@@ -62,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         // RecyclerView
         cityAdapter = CityAdapter(savedCities,
             onItemClick = { city ->
-                getWeather(city.name, city.latitude, city.longitude)
+                getWeather(city.latitude, city.longitude)
             },
             onItemLongClick = { city ->
                 viewModel.deleteCity(city)
@@ -154,7 +153,7 @@ class MainActivity : AppCompatActivity() {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
                     // Ottieni la latitudine e longitudine e chiama la funzione per ottenere il meteo
-                    getWeather("La tua posizione", location.latitude, location.longitude)
+                    getWeather(location.latitude, location.longitude)
                 } else {
                     Toast.makeText(this, "Posizione non disponibile", Toast.LENGTH_SHORT).show()
                 }
@@ -180,7 +179,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getWeather(cityName: String, lat: Double, lon: Double) {
+    private fun getWeather(lat: Double, lon: Double) {
         val lang = SettingsManager.getLanguage(this)
         val url =
             "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=${BuildConfig.OPENWEATHER_API_KEY}&units=metric&lang=$lang"
