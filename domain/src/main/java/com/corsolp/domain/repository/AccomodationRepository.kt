@@ -1,6 +1,6 @@
 package com.corsolp.domain.repository
 
-import com.corsolp.domain.models.AccomodationType
+import com.corsolp.domain.model.AccomodationType
 import kotlinx.coroutines.flow.StateFlow
 
 interface AccomodationRepository {

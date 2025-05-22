@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide
 import com.corsolp.ui.R
 import com.corsolp.ui.databinding.ItemListApartmentBinding
 import com.corsolp.ui.databinding.ItemListHotelBinding
-import com.corsolp.domain.models.AccomodationType
+import com.corsolp.domain.model.AccomodationType
 
 //Versione 3a ora
 class AccomodationAdapter(

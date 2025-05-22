@@ -1,4 +1,4 @@
-package com.corsolp.domain.models
+package com.corsolp.domain.model
 
 sealed class AccomodationType(
     val name: String,
