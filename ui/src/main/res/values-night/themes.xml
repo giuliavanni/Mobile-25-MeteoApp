@@ -9,7 +9,10 @@
         <item name="android:colorBackground">@color/black</item>
         <item name="colorOnBackground">@color/white</item>
 
+
         <item name="colorSurface">@color/black</item>
         <item name="colorOnSurface">@color/white</item>
+
+        <item name="cardBackgroundColor">@color/dark_blue</item>
     </style>
 </resources>
