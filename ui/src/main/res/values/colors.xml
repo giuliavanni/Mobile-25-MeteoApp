@@ -5,5 +5,6 @@
     <color name="grey">#CCCCCC</color>
     <color name="bg_settings_fragment">#FF0000</color>
     <color name="blue">#0000FF</color>
+    <color name="dark_blue">#1D1F2F</color>
 
 </resources>
