@@ -1,6 +1,6 @@
 package com.corsolp.domain.usecases
 
-import com.corsolp.domain.models.AccomodationType
+import com.corsolp.domain.model.AccomodationType
 import com.corsolp.domain.repository.AccomodationRepository
 import kotlinx.coroutines.flow.StateFlow
 

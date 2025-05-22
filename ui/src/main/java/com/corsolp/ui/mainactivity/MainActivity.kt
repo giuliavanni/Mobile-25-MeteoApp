@@ -17,9 +17,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.corsolp.data.WeatherInfo
+import com.corsolp.domain.model.WeatherInfo
 import com.corsolp.data.database.CityEntity
-import com.corsolp.domain.settings.SettingsManager
+import com.corsolp.data.settings.SettingsManager
 import com.corsolp.ui.BuildConfig
 import com.corsolp.ui.R
 import com.corsolp.ui.forecast.ForecastActivity

@@ -1,4 +1,4 @@
-package com.corsolp.domain.settings
+package com.corsolp.data.settings
 
 import android.content.Context
 import android.content.SharedPreferences

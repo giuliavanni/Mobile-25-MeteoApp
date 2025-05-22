@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.corsolp.data.ForecastItem
-import com.corsolp.domain.settings.SettingsManager
+import com.corsolp.domain.model.ForecastItem
+import com.corsolp.data.settings.SettingsManager
 import com.corsolp.ui.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

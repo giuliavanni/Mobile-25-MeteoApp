@@ -1,4 +1,4 @@
-package com.corsolp.data
+package com.corsolp.domain.model
 
 data class WeatherInfo(
     val cityName: String,

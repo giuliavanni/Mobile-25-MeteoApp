@@ -5,15 +5,11 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.commit
 import com.corsolp.ui.databinding.ActivitySettingsBinding
-import android.widget.Spinner
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
-import com.corsolp.domain.settings.SettingsManager
+import com.corsolp.data.settings.SettingsManager
 import com.corsolp.ui.R
 import com.corsolp.ui.mainactivity.MainActivity
 import java.util.Locale

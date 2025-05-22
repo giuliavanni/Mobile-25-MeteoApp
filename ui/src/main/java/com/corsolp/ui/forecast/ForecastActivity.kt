@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.corsolp.domain.settings.SettingsManager
+import com.corsolp.data.settings.SettingsManager
 import com.corsolp.ui.R
 import java.util.Locale
 
