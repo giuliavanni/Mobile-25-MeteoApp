@@ -8,6 +8,7 @@ import com.corsolp.data.mapper.toEntity
 import com.corsolp.domain.model.City
 import com.corsolp.domain.model.WeatherInfo
 import com.corsolp.domain.usecase.DeleteCityUseCase
+import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
 import com.corsolp.domain.usecase.FetchWeatherUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
@@ -18,7 +19,9 @@ class MainViewModel(
     private val getSavedCitiesUseCase: GetSavedCitiesUseCase,
     private val saveCityUseCase: SaveCityUseCase,
     private val deleteCityUseCase: DeleteCityUseCase,
-    private val fetchWeatherUseCase: FetchWeatherUseCase
+    private val fetchWeatherUseCase: FetchWeatherUseCase,
+    private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase
+
 ) : AndroidViewModel(application) {
 
     private val _cities = MutableLiveData<List<CityEntity>?>()
@@ -67,9 +70,10 @@ class MainViewModel(
 
     fun fetchWeatherByCoordinates(lat: Double, lon: Double, lang: String, apiKey: String) {
         viewModelScope.launch {
-            val result = fetchWeatherUseCase.byCoordinates(lat, lon, lang, apiKey)
+            val result = fetchWeatherByCoordinatesUseCase(lat, lon, lang, apiKey)
             result.onSuccess { _weather.value = it }
             result.onFailure { _error.value = it.message ?: "Errore sconosciuto" }
         }
     }
+
 }

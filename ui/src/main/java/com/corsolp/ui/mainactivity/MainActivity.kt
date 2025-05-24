@@ -32,6 +32,7 @@ import com.corsolp.data.database.AppDatabase
 import com.corsolp.data.di.CityRepositoryImpl
 import com.corsolp.data.di.WeatherRepositoryImpl
 import com.corsolp.domain.usecase.DeleteCityUseCase
+import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
 import com.corsolp.domain.usecase.FetchWeatherUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
@@ -262,7 +263,9 @@ class MainActivity : AppCompatActivity() {
             getSavedCitiesUseCase = GetSavedCitiesUseCase(cityRepository),
             saveCityUseCase = SaveCityUseCase(cityRepository),
             deleteCityUseCase = DeleteCityUseCase(cityRepository),
-            fetchWeatherUseCase = FetchWeatherUseCase(weatherRepository)         )
+            fetchWeatherUseCase = FetchWeatherUseCase(weatherRepository),
+            fetchWeatherByCoordinatesUseCase = FetchWeatherByCoordinatesUseCase(weatherRepository)
+        )
     }
 
 

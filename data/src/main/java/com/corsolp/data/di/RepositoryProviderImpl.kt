@@ -1,5 +1,6 @@
 package com.corsolp.data.di
 
+import com.corsolp.data.repository.AccomodationRepositoryImpl
 import com.corsolp.domain.di.RepositoryProvider
 import com.corsolp.domain.repository.AccomodationRepository
 
