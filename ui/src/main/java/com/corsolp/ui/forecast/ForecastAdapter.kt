@@ -1,5 +1,6 @@
 package com.corsolp.ui.forecast
 
+import android.icu.text.SimpleDateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.corsolp.domain.model.ForecastItem
 import com.corsolp.ui.R
+import java.util.Locale
 
 class ForecastAdapter(
     private var forecastList: List<ForecastItem>
@@ -24,7 +26,18 @@ class ForecastAdapter(
         private val windTextView: TextView = itemView.findViewById(R.id.textWind)
 
         fun bind(forecast: ForecastItem) {
-            dateTextView.text = forecast.date
+            //dateTextView.text = forecast.date
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val currentLocale = itemView.context.resources.configuration.locales[0]
+            val outputDateFormat = SimpleDateFormat("EEEE dd MMMM", currentLocale)
+            val outputTimeFormat = SimpleDateFormat("HH:mm", currentLocale)
+
+
+            val parsedDate = inputFormat.parse(forecast.date)
+            val formattedDate = outputDateFormat.format(parsedDate!!)
+            val formattedTime = outputTimeFormat.format(parsedDate)
+
+            dateTextView.text = itemView.context.getString(R.string.forecast_date_format, formattedDate, formattedTime)
             tempTextView.text = itemView.context.getString(R.string.temperature_format, forecast.temp)
             descTextView.text = forecast.description
             humidityTextView.text = itemView.context.getString(R.string.humidity_format, forecast.humidity)
