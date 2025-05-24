@@ -29,8 +29,8 @@ import com.corsolp.ui.settings.SettingsActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.corsolp.data.database.AppDatabase
-import com.corsolp.data.repository.CityRepositoryImpl
-import com.corsolp.data.repository.WeatherRepositoryImpl
+import com.corsolp.data.di.CityRepositoryImpl
+import com.corsolp.data.di.WeatherRepositoryImpl
 import com.corsolp.domain.usecase.DeleteCityUseCase
 import com.corsolp.domain.usecase.FetchWeatherUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
