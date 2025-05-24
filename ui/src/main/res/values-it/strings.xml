@@ -30,6 +30,7 @@
     <string name="error_http">Errore HTTP: %1$d</string>
     <string name="error_generic">Errore: %1$s</string>
 
+    <string name="forecast_date_format">%1$s\n%2$s</string>
     <string name="forecast">Previsioni: </string>
     <string name="pressure_format">Pressione: %1$d hPa</string>
     <string name="humidity_format">Umidità: %1$d%%</string>
