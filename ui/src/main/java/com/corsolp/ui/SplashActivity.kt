@@ -35,6 +35,7 @@ class SplashActivity : AppCompatActivity() {
             //Se voglio provare l'activity con la demo di richiesta permessi
             //val intent = Intent(this, MainActivity2::class.java)
             startActivity(intent)
+            finish()
         }, 1500)
     }
 }
