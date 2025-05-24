@@ -28,11 +28,13 @@ import com.corsolp.ui.map.MapActivity
 import com.corsolp.ui.settings.SettingsActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.*
-import androidx.lifecycle.lifecycleScope
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
+import com.corsolp.data.database.AppDatabase
+import com.corsolp.data.repository.CityRepositoryImpl
+import com.corsolp.data.repository.WeatherRepositoryImpl
+import com.corsolp.domain.usecase.DeleteCityUseCase
+import com.corsolp.domain.usecase.FetchWeatherUseCase
+import com.corsolp.domain.usecase.GetSavedCitiesUseCase
+import com.corsolp.domain.usecase.SaveCityUseCase
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
@@ -41,7 +43,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cityAdapter: CityAdapter
     private val savedCities = mutableListOf<CityEntity>()
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels {
+        provideViewModelFactory()
+    }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -94,9 +98,11 @@ class MainActivity : AppCompatActivity() {
 
         // ViewModel: osserva le città salvate
         viewModel.cities.observe(this) { updatedCities ->
-            savedCities.clear()
-            savedCities.addAll(updatedCities)
-            cityAdapter.notifyDataSetChanged()
+            updatedCities?.let {
+                savedCities.clear()
+                savedCities.addAll(it)
+                cityAdapter.notifyDataSetChanged()
+            }
         }
 
         // Carica città iniziali
@@ -112,6 +118,16 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Inserisci una città", Toast.LENGTH_SHORT).show()
             }
+        binding.cityEditText.text.clear()
+        }
+
+        // osserva meteo e errori
+        viewModel.weather.observe(this) { info ->
+            info?.let { updateUI(it) }
+        }
+
+        viewModel.error.observe(this) { message ->
+            message?.let { showError(it) }
         }
 
     }
@@ -195,77 +211,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun getWeather(lat: Double, lon: Double) {
         val lang = SettingsManager.getLanguage(this)
-        val url =
-            "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=${BuildConfig.OPENWEATHER_API_KEY}&units=metric&lang=$lang"
+        val apiKey = BuildConfig.OPENWEATHER_API_KEY
+        viewModel.fetchWeatherByCoordinates(lat, lon, lang, apiKey)
 
-        lifecycleScope.launch {
-            fetchWeatherData(
-                url,
-                onSuccess = { info -> updateUI(info) },
-                onError = { error -> showError(error) }
-            )
-        }
     }
+
 
     private fun getWeatherAndSave(city: String) {
         val lang = SettingsManager.getLanguage(this)
-        val url =
-            "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=${BuildConfig.OPENWEATHER_API_KEY}&units=metric&lang=$lang"
-
-        lifecycleScope.launch {
-            fetchWeatherData(
-                url,
-                onSuccess = { info ->
-                    viewModel.saveCity(CityEntity(info.cityName, info.latitude, info.longitude))
-                    updateUI(info)
-                },
-                onError = { error -> showError(error) }
-            )
-        }
+        val apiKey = BuildConfig.OPENWEATHER_API_KEY
+        viewModel.fetchWeather(city, lang, apiKey)
     }
 
-    private suspend fun fetchWeatherData(
-        url: String,
-        onSuccess: suspend (WeatherInfo) -> Unit,
-        onError: suspend (String) -> Unit
-    ) {
-        withContext(Dispatchers.IO) {
-            try {
-                val connection = URL(url).openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                val responseCode = connection.responseCode
-
-                if (responseCode == 200) {
-                    val response = connection.inputStream.bufferedReader().use { it.readText() }
-                    val json = JSONObject(response)
-                    val weatherInfo = parseWeatherJson(json)
-                    withContext(Dispatchers.Main) { onSuccess(weatherInfo) }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onError(getString(R.string.error_http, responseCode))
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    onError(getString(R.string.error_generic, e.message ?: "Errore sconosciuto"))
-                }
-            }
-        }
-    }
-
-
-    private fun parseWeatherJson(json: JSONObject): WeatherInfo {
-        val cityName = json.getString("name")
-        val temp = json.getJSONObject("main").getDouble("temp")
-        val condition = json.getJSONArray("weather").getJSONObject(0).getString("description")
-        val iconCode = json.getJSONArray("weather").getJSONObject(0).getString("icon")
-        val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png"
-        val coord = json.getJSONObject("coord")
-        val lat = coord.getDouble("lat")
-        val lon = coord.getDouble("lon")
-
-        return WeatherInfo(cityName, temp, condition, iconUrl, lat, lon)
-    }
 
     private fun updateUI(info: WeatherInfo) {
         binding.textCityName.text = info.cityName
@@ -294,6 +251,20 @@ class MainActivity : AppCompatActivity() {
         }
         startActivity(intent)
     }
+
+    private fun provideViewModelFactory(): MainViewModelFactory {
+        val dao = AppDatabase.getDatabase(applicationContext).cityDao()
+        val cityRepository = CityRepositoryImpl(dao)
+        val weatherRepository = WeatherRepositoryImpl()
+
+        return MainViewModelFactory(
+            application,
+            getSavedCitiesUseCase = GetSavedCitiesUseCase(cityRepository),
+            saveCityUseCase = SaveCityUseCase(cityRepository),
+            deleteCityUseCase = DeleteCityUseCase(cityRepository),
+            fetchWeatherUseCase = FetchWeatherUseCase(weatherRepository)         )
+    }
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001

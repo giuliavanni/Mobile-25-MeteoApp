@@ -1,0 +1,20 @@
+package com.corsolp.data.mapper
+
+import com.corsolp.domain.model.City
+import com.corsolp.data.database.CityEntity
+
+fun CityEntity.toDomain(): City {
+    return City(
+        name = this.name,
+        latitude = this.latitude,
+        longitude = this.longitude
+    )
+}
+
+fun City.toEntity(): CityEntity {
+    return CityEntity(
+        name = this.name,
+        latitude = this.latitude,
+        longitude = this.longitude
+    )
+}
