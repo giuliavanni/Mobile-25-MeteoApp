@@ -9,7 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.corsolp.data.di.ForecastRepositoryImpl
 import com.corsolp.data.settings.SettingsManager
+import com.corsolp.domain.usecase.FetchForecastUseCase
+import com.corsolp.ui.BuildConfig
 import com.corsolp.ui.R
 import java.util.Locale
 
@@ -55,7 +58,11 @@ class ForecastActivity : AppCompatActivity() {
             return
         }
 
-        viewModel = ViewModelProvider(this)[ForecastViewModel::class.java]
+        val repository = ForecastRepositoryImpl()
+        val fetchForecastUseCase = FetchForecastUseCase(repository)
+        val factory = ForecastViewModelFactory(fetchForecastUseCase)
+
+        viewModel = ViewModelProvider(this, factory)[ForecastViewModel::class.java]
 
         viewModel.forecastList.observe(this) { forecastItems ->
             forecastAdapter.updateData(forecastItems)
@@ -65,9 +72,12 @@ class ForecastActivity : AppCompatActivity() {
             Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
         }
 
-        viewModel.loadForecast(city, this)
+        val lang = SettingsManager.getLanguage(this)
+        val apiKey = BuildConfig.OPENWEATHER_API_KEY
+        viewModel.loadForecast(city, lang, apiKey)
     }
 }
+
 
 
 
