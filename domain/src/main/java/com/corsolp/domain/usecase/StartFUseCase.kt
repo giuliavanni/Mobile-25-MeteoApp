@@ -1,4 +1,4 @@
-package com.corsolp.domain.usecases
+package com.corsolp.domain.usecase
 
 import com.corsolp.domain.repository.AccomodationRepository
 

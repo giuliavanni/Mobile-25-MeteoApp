@@ -1,9 +1,9 @@
 package com.corsolp.domain.di
 
-import com.corsolp.domain.usecases.FetchAccomodationTypeListUseCase
-import com.corsolp.domain.usecases.FetchAccomodationTypeListUseCaseImpl
-import com.corsolp.domain.usecases.StartFUseCase
-import com.corsolp.domain.usecases.StartFUseCaseImpl
+import com.corsolp.domain.usecase.FetchAccomodationTypeListUseCase
+import com.corsolp.domain.usecase.FetchAccomodationTypeListUseCaseImpl
+import com.corsolp.domain.usecase.StartFUseCase
+import com.corsolp.domain.usecase.StartFUseCaseImpl
 
 object UseCaseProvider {
 

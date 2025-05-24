@@ -3,8 +3,8 @@ package com.corsolp.ui.homepage
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.corsolp.domain.model.AccomodationType
-import com.corsolp.domain.usecases.FetchAccomodationTypeListUseCase
-import com.corsolp.domain.usecases.StartFUseCase
+import com.corsolp.domain.usecase.FetchAccomodationTypeListUseCase
+import com.corsolp.domain.usecase.StartFUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
