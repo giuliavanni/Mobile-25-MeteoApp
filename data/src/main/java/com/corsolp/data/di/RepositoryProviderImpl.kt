@@ -1,9 +1,14 @@
 package com.corsolp.data.di
 
-import com.corsolp.data.repository.AccomodationRepositoryImpl
-import com.corsolp.domain.di.RepositoryProvider
-import com.corsolp.domain.repository.AccomodationRepository
 
-class RepositoryProviderImpl: RepositoryProvider {
-    override val accomodationRepository: AccomodationRepository = AccomodationRepositoryImpl()
+import com.corsolp.data.database.CityDao
+import com.corsolp.domain.di.RepositoryProvider
+import com.corsolp.domain.repository.CityRepository
+import com.corsolp.domain.repository.ForecastRepository
+import com.corsolp.domain.repository.WeatherRepository
+
+class RepositoryProviderImpl(private val cityDao: CityDao,): RepositoryProvider {
+    override val cityRepository: CityRepository = CityRepositoryImpl(cityDao)
+    override val weatherRepository: WeatherRepository = WeatherRepositoryImpl()
+    override val forecastRepository: ForecastRepository = ForecastRepositoryImpl()
 }
