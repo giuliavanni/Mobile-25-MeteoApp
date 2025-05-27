@@ -5,31 +5,41 @@
     android:orientation="horizontal"
     android:padding="16dp">
 
+    <ImageView
+        android:id="@+id/favoriteIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:contentDescription="@string/favorite"
+        android:padding="8dp"
+        android:src="@drawable/ic_heart_outline" />
+
     <TextView
         android:id="@+id/cityNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:text="Nome città" />
+        android:text="@string/city_name" />
 
     <View
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1" />
 
+
     <ImageButton
         android:id="@+id/buttonForecast"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_calendar"
-        android:text="Previsioni"/>
+        android:text="@string/forecast"/>
 
     <ImageButton
         android:id="@+id/openMapButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_earth"
-        android:text="Mappa" />
+        android:text="@string/map" />
     
 
 </LinearLayout>
