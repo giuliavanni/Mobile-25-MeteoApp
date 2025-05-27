@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class CityEntity(
     @PrimaryKey val name: String,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val isFavorite: Boolean = false
 )
