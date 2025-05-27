@@ -5,8 +5,10 @@ import androidx.lifecycle.*
 import com.corsolp.data.database.CityEntity
 import com.corsolp.data.mapper.toDomain
 import com.corsolp.data.mapper.toEntity
+import com.corsolp.domain.di.UseCaseProvider.getSavedCitiesUseCase
 import com.corsolp.domain.model.City
 import com.corsolp.domain.model.WeatherInfo
+import com.corsolp.domain.repository.CityRepository
 import com.corsolp.domain.usecase.DeleteCityUseCase
 import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
 import com.corsolp.domain.usecase.FetchWeatherUseCase
@@ -20,12 +22,14 @@ class MainViewModel(
     private val saveCityUseCase: SaveCityUseCase,
     private val deleteCityUseCase: DeleteCityUseCase,
     private val fetchWeatherUseCase: FetchWeatherUseCase,
-    private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase
+    private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase,
+    private val cityRepository: CityRepository
+
 
 ) : AndroidViewModel(application) {
 
-    private val _cities = MutableLiveData<List<CityEntity>?>()
-    val cities: LiveData<List<CityEntity>?> = _cities
+    private val _cities = MutableLiveData<List<City>>()
+    val cities: LiveData<List<City>> get() = _cities
 
     private val _weather = MutableLiveData<WeatherInfo?>()
     val weather: LiveData<WeatherInfo?> = _weather
@@ -36,20 +40,20 @@ class MainViewModel(
     fun loadSavedCities() {
         viewModelScope.launch {
             val domainCities = getSavedCitiesUseCase()
-            _cities.value = domainCities.map { it.toEntity() }
+            _cities.postValue(domainCities.sortedByDescending { it.isFavorite })
         }
     }
 
-    fun saveCity(city: CityEntity) {
+    fun saveCity(city: City) {
         viewModelScope.launch {
-            saveCityUseCase(city.toDomain())
+            saveCityUseCase(city)
             loadSavedCities()
         }
     }
 
-    fun deleteCity(city: CityEntity) {
+    fun deleteCity(city: City) {
         viewModelScope.launch {
-            deleteCityUseCase(city.toDomain())
+            deleteCityUseCase(city)
             loadSavedCities()
         }
     }
@@ -73,6 +77,14 @@ class MainViewModel(
             val result = fetchWeatherByCoordinatesUseCase(lat, lon, lang, apiKey)
             result.onSuccess { _weather.value = it }
             result.onFailure { _error.value = it.message ?: "Errore sconosciuto" }
+        }
+    }
+
+    fun toggleFavorite(city: City) {
+        viewModelScope.launch {
+            val updatedCity = city.copy(isFavorite = !city.isFavorite)
+            cityRepository.updateCity(updatedCity)
+            loadSavedCities()
         }
     }
 

@@ -31,6 +31,7 @@ import com.google.android.gms.location.LocationServices
 import com.corsolp.data.database.AppDatabase
 import com.corsolp.data.di.CityRepositoryImpl
 import com.corsolp.data.di.WeatherRepositoryImpl
+import com.corsolp.data.mapper.toEntity
 import com.corsolp.domain.usecase.DeleteCityUseCase
 import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
 import com.corsolp.domain.usecase.FetchWeatherUseCase
@@ -86,11 +87,14 @@ class MainActivity : AppCompatActivity() {
                 viewModel.deleteCity(city)
                 Toast.makeText(this, "Città eliminata", Toast.LENGTH_SHORT).show()
             },
-            onMapClick = { city -> openMapForCity(city)},
+            onMapClick = { city -> openMapForCity(city.toEntity())},
             onForecastClick = { city ->
                 val intent = Intent(this, ForecastActivity::class.java)
                 intent.putExtra("city_name", city.name)
                 startActivity(intent)
+            },
+            onFavoriteToggle = { city ->
+                viewModel.toggleFavorite(city)
             }
         )
 
@@ -101,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.cities.observe(this) { updatedCities ->
             updatedCities?.let {
                 savedCities.clear()
-                savedCities.addAll(it)
+                savedCities.addAll(it.map { city -> city.toEntity() })
                 cityAdapter.notifyDataSetChanged()
             }
         }
@@ -264,7 +268,8 @@ class MainActivity : AppCompatActivity() {
             saveCityUseCase = SaveCityUseCase(cityRepository),
             deleteCityUseCase = DeleteCityUseCase(cityRepository),
             fetchWeatherUseCase = FetchWeatherUseCase(weatherRepository),
-            fetchWeatherByCoordinatesUseCase = FetchWeatherByCoordinatesUseCase(weatherRepository)
+            fetchWeatherByCoordinatesUseCase = FetchWeatherByCoordinatesUseCase(weatherRepository),
+            cityRepository = cityRepository
         )
     }
 

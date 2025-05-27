@@ -19,4 +19,8 @@ class CityRepositoryImpl(private val dao: CityDao) : CityRepository {
     override suspend fun deleteCity(city: City) {
         dao.deleteCity(city.toEntity())
     }
+
+    override suspend fun updateCity(city: City) {
+        dao.updateCity(city.toEntity())
+    }
 }

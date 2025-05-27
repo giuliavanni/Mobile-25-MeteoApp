@@ -3,6 +3,7 @@ package com.corsolp.ui.mainactivity
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.corsolp.domain.repository.CityRepository
 import com.corsolp.domain.usecase.DeleteCityUseCase
 import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
 import com.corsolp.domain.usecase.FetchWeatherUseCase
@@ -15,7 +16,8 @@ class MainViewModelFactory(
     private val saveCityUseCase: SaveCityUseCase,
     private val deleteCityUseCase: DeleteCityUseCase,
     private val fetchWeatherUseCase: FetchWeatherUseCase,
-    private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase
+    private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase,
+    private val cityRepository: CityRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -27,7 +29,8 @@ class MainViewModelFactory(
                 saveCityUseCase,
                 deleteCityUseCase,
                 fetchWeatherUseCase,
-                fetchWeatherByCoordinatesUseCase
+                fetchWeatherByCoordinatesUseCase,
+                cityRepository
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
