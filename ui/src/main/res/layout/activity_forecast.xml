@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/forecast"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:textColor="?attr/colorPrimary"/>
 
     <TextView
         android:id="@+id/cityNameTextView"
