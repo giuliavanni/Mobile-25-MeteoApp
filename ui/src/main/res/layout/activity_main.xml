@@ -24,14 +24,33 @@
             android:layout_gravity="center" />
     </androidx.appcompat.widget.Toolbar>
 
+    <EditText
+        android:id="@+id/cityEditText"
+        android:hint="@string/city_insert"
+        android:autofillHints="addressLocality"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+    <Button
+        android:id="@+id/searchButton"
+        android:text="@string/city_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:textColor="?attr/colorPrimary"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp" />
+
     <ImageView
         android:id="@+id/weatherIconImageView"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center"
+        android:contentDescription="@string/weather_icon"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_launcher_background"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="12dp" />
 
     <TextView
         android:id="@+id/textCityName"
@@ -66,24 +85,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="4dp" />
 
-    <EditText
-        android:id="@+id/cityEditText"
-        android:hint="@string/city_insert"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp" />
 
-    <Button
-        android:id="@+id/searchButton"
-        android:text="@string/city_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:textColor="?attr/colorPrimary"
-        android:layout_gravity="end"
-        android:layout_marginTop="8dp" />
-
-    <!-- RecyclerView che occupa tutto lo spazio rimanente e scrolla -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/savedCitiesRecyclerView"
         android:layout_width="match_parent"
