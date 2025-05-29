@@ -8,10 +8,13 @@
     <application>
         <activity
             android:name=".forecast.ForecastActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.CorsoLPActivitiesFragments" />
         <activity
             android:name=".mainactivity.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.CorsoLPActivitiesFragments"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".map.MapActivity"
             android:exported="false"
