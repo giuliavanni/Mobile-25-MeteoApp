@@ -22,6 +22,7 @@
     <string name="previous">Precedente</string>
 
     <string name="city_insert">Inserisci la città</string>
+    <string name="weather_icon">Icona Meteo</string>
     <string name="city_search">Cerca</string>
     <string name="city_saved">Città salvate: </string>
     <string name="city_name">Nome città</string>

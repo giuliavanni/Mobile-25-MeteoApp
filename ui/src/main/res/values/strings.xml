@@ -22,6 +22,7 @@
 
     <string name="city_insert">Insert the city: </string>
     <string name="city_search">Search</string>
+    <string name="weather_icon"> Weather Icon</string>
     <string name="city_saved">Saved cities: </string>
     <string name="city_name">City name</string>
     <string name="favorite">Favourite city</string>
