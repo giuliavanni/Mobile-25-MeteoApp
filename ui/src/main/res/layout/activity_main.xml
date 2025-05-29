@@ -1,106 +1,94 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-    <ScrollView
-        android:id="@+id/mainScrollView"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/savedCitiesRecyclerView">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            android:fontFamily="@font/lobster"
+            android:layout_gravity="center" />
+    </androidx.appcompat.widget.Toolbar>
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
-                android:elevation="4dp"
-                android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+    <ImageView
+        android:id="@+id/weatherIconImageView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_marginTop="16dp" />
 
-                <TextView
-                    android:id="@+id/toolbar_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_name"
-                    android:textColor="@android:color/white"
-                    android:textSize="30sp"
-                    android:fontFamily="@font/lobster"
-                    android:layout_gravity="center" />
-            </androidx.appcompat.widget.Toolbar>
+    <TextView
+        android:id="@+id/textCityName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/city_name"
+        android:textSize="@dimen/txt_size_title"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp" />
 
-            <ImageView
-                android:id="@+id/weatherIconImageView"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_launcher_background"/>
+    <TextView
+        android:id="@+id/textTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/temperature_format"
+        android:textSize="@dimen/txt_size_xlarge"
+        android:textColor="?android:textColorPrimary"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp" />
 
-            <TextView
-                android:id="@+id/textCityName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/city_name"
-                android:textSize="@dimen/txt_size_title"
-                android:textStyle="bold"
-                android:visibility="gone"
-                android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/textDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/weather_description"
+        android:textSize="@dimen/txt_size_large"
+        android:textColor="?android:textColorPrimary"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_marginTop="4dp" />
 
-            <TextView
-                android:id="@+id/textTemperature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/temperature_format"
-                android:textSize="@dimen/txt_size_xlarge"
-                android:textColor="?android:textColorPrimary"
-                android:visibility="gone"
-                android:layout_gravity="center"/>
+    <EditText
+        android:id="@+id/cityEditText"
+        android:hint="@string/city_insert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
 
-            <TextView
-                android:id="@+id/textDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/weather_description"
-                android:textSize="@dimen/txt_size_large"
-                android:textColor="?android:textColorPrimary"
-                android:visibility="gone"
-                android:layout_gravity="center"/>
+    <Button
+        android:id="@+id/searchButton"
+        android:text="@string/city_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:textColor="?attr/colorPrimary"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp" />
 
-            <EditText
-                android:id="@+id/cityEditText"
-                android:hint="@string/city_insert"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <Button
-                android:id="@+id/searchButton"
-                android:text="@string/city_search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:textColor="?attr/colorPrimary"
-                android:layout_gravity="end"/>
-        </LinearLayout>
-    </ScrollView>
-
+    <!-- RecyclerView che occupa tutto lo spazio rimanente e scrolla -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/savedCitiesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/mainScrollView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_weight="1"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>
