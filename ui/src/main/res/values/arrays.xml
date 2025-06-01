@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="languages_array">
+        <item>it</item>
+        <item>en</item>
+
+    </string-array>
+
+    <string-array name="themes_array">
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+
+    <string-array name="temp_units_array">
+        <item>Celsius</item>
+        <item>Fahrenheit</item>
+    </string-array>
+
+</resources>

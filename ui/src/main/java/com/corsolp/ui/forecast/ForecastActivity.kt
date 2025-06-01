@@ -10,14 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.corsolp.data.di.ForecastRepositoryImpl
+import com.corsolp.data.di.SettingsRepositoryImpl
 import com.corsolp.data.settings.SettingsManager
 import com.corsolp.domain.usecase.FetchForecastUseCase
+import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.BuildConfig
 import com.corsolp.ui.R
 import java.util.Locale
 
 
-class ForecastActivity : AppCompatActivity() {
+class ForecastActivity : BaseActivity() {
 
     private lateinit var forecastRecyclerView: RecyclerView
     private lateinit var forecastAdapter: ForecastAdapter
@@ -27,7 +29,8 @@ class ForecastActivity : AppCompatActivity() {
     private lateinit var city: String
 
     override fun attachBaseContext(newBase: Context) {
-        val lang = SettingsManager.getLanguage(newBase)
+        val settingsRepository = SettingsRepositoryImpl(newBase)
+        val lang = settingsRepository.getLanguage()
         val locale = Locale(lang)
         Locale.setDefault(locale)
 
