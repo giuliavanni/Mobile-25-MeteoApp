@@ -22,6 +22,10 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        manifestPlaceholders = [
+                MAPS_API_KEY: project.properties["MAPS_API_KEY"] ?: ""
+        ]
+
         // Passa la chiave dal file local.properties a BuildConfig
         //buildConfigField "String", "OPENWEATHER_API_KEY", "\"${project.findProperty("OPENWEATHER_API_KEY")}\""
     }
