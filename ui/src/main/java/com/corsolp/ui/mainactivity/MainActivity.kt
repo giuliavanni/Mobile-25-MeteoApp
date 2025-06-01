@@ -30,16 +30,19 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.corsolp.data.database.AppDatabase
 import com.corsolp.data.di.CityRepositoryImpl
+import com.corsolp.data.di.SettingsRepositoryImpl
 import com.corsolp.data.di.WeatherRepositoryImpl
 import com.corsolp.data.mapper.toEntity
 import com.corsolp.domain.usecase.DeleteCityUseCase
 import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
 import com.corsolp.domain.usecase.FetchWeatherUseCase
+import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
+import com.corsolp.ui.BaseActivity
 import java.util.Locale
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var cityAdapter: CityAdapter
@@ -52,7 +55,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun attachBaseContext(newBase: Context) {
-        val lang = SettingsManager.getLanguage(newBase)
+        val settingsRepository = SettingsRepositoryImpl(newBase)
+        val lang = settingsRepository.getLanguage()
         val locale = Locale(lang)
         Locale.setDefault(locale)
 
@@ -215,17 +219,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getWeather(lat: Double, lon: Double) {
-        val lang = SettingsManager.getLanguage(this)
         val apiKey = BuildConfig.OPENWEATHER_API_KEY
-        viewModel.fetchWeatherByCoordinates(lat, lon, lang, apiKey)
-
+        viewModel.fetchWeatherByCoordinates(lat, lon, apiKey)
     }
 
-
     private fun getWeatherAndSave(city: String) {
-        val lang = SettingsManager.getLanguage(this)
         val apiKey = BuildConfig.OPENWEATHER_API_KEY
-        viewModel.fetchWeather(city, lang, apiKey)
+        viewModel.fetchWeather(city, apiKey)
     }
 
 
@@ -261,6 +261,8 @@ class MainActivity : AppCompatActivity() {
         val dao = AppDatabase.getDatabase(applicationContext).cityDao()
         val cityRepository = CityRepositoryImpl(dao)
         val weatherRepository = WeatherRepositoryImpl()
+        val settingsRepository = SettingsRepositoryImpl(applicationContext)
+        val getAppLanguageUseCase = GetAppLanguageUseCase(settingsRepository)
 
         return MainViewModelFactory(
             application,
@@ -269,6 +271,7 @@ class MainActivity : AppCompatActivity() {
             deleteCityUseCase = DeleteCityUseCase(cityRepository),
             fetchWeatherUseCase = FetchWeatherUseCase(weatherRepository),
             fetchWeatherByCoordinatesUseCase = FetchWeatherByCoordinatesUseCase(weatherRepository),
+            getAppLanguageUseCase = getAppLanguageUseCase,
             cityRepository = cityRepository
         )
     }

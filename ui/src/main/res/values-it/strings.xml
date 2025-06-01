@@ -41,10 +41,16 @@
     <string name="wind_format">Velocità del vento: %1$.1f m/s</string>
 
     <string name="language">Scegli la lingua: </string>
+    <string name="temp_unit">Unità di misura della temperatura: </string>
     <string name="theme">Scegli il tema: </string>
     <string name="dark">Scuro </string>
     <string name="light">Chiaro </string>
     <string name="save_settings">Salva le impostazioni </string>
+    <string-array name="temp_units">
+        <item>Celsius (°C)</item>
+        <item>Kelvin (K)</item>
+        <item>Fahrenheit (°F)</item>
+    </string-array>
 
 
 

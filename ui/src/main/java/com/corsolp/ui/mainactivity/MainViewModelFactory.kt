@@ -7,6 +7,7 @@ import com.corsolp.domain.repository.CityRepository
 import com.corsolp.domain.usecase.DeleteCityUseCase
 import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
 import com.corsolp.domain.usecase.FetchWeatherUseCase
+import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
 
@@ -17,8 +18,10 @@ class MainViewModelFactory(
     private val deleteCityUseCase: DeleteCityUseCase,
     private val fetchWeatherUseCase: FetchWeatherUseCase,
     private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase,
-    private val cityRepository: CityRepository
-) : ViewModelProvider.Factory {
+    private val cityRepository: CityRepository,
+    private val getAppLanguageUseCase: GetAppLanguageUseCase,
+
+    ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -30,7 +33,8 @@ class MainViewModelFactory(
                 deleteCityUseCase,
                 fetchWeatherUseCase,
                 fetchWeatherByCoordinatesUseCase,
-                cityRepository
+                cityRepository,
+                getAppLanguageUseCase
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

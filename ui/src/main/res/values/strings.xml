@@ -40,10 +40,16 @@
     <string name="wind_format">Wind speed %1$.1f m/s</string>
 
     <string name="language">Choose the language: </string>
+    <string name="temp_unit"> Temperature Unit: </string>
     <string name="theme">Choose the theme mode: </string>
     <string name="dark">Dark </string>
     <string name="light">Light </string>
     <string name="save_settings">Save settings </string>
+    <string-array name="temp_units">
+        <item>Celsius (°C)</item>
+        <item>Kelvin (K)</item>
+        <item>Fahrenheit (°F)</item>
+    </string-array>
 
 
     <string name="lorem_ipsum">

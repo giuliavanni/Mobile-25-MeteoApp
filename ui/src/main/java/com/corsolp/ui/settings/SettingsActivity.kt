@@ -9,81 +9,106 @@ import com.corsolp.ui.databinding.ActivitySettingsBinding
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ViewModelProvider
+import com.corsolp.data.di.SettingsRepositoryImpl
 import com.corsolp.data.settings.SettingsManager
+import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.R
 import com.corsolp.ui.mainactivity.MainActivity
 import java.util.Locale
 
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : BaseActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
-
-    override fun attachBaseContext(newBase: Context) {
-        val lang = SettingsManager.getLanguage(newBase)
-        val locale = Locale(lang)
-        Locale.setDefault(locale)
-
-        val config = Configuration()
-        config.setLocale(locale)
-
-        val newContext = newBase.createConfigurationContext(config)
-        super.attachBaseContext(newContext)
-
-    }
+    private lateinit var viewModel: SettingsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Imposta le lingue nel Spinner
-        val languages = arrayOf("Italiano", "English")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languages)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerLanguage.adapter = adapter
+        // Crea repository e factory
+        val repository = SettingsRepositoryImpl(applicationContext)
+        val factory = SettingsViewModelFactory(repository)
 
-        // Carica le impostazioni salvate
-        val savedLang = SettingsManager.getLanguage(this)
-        binding.spinnerLanguage.setSelection(if (savedLang == "en") 1 else 0)
+        viewModel = ViewModelProvider(this, factory).get(SettingsViewModel::class.java)
 
-        val savedTheme = SettingsManager.getTheme(this)
-        val themeId = if (savedTheme == "Light") R.id.radioLight else R.id.radioDark
-        binding.radioGroupTheme.check(themeId)
+        // Imposta gli adapter per gli spinner con le risorse XML
+        val languageAdapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.languages_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        binding.languageSpinner.adapter = languageAdapter
 
-        // Salva impostazioni
-        binding.btnSaveSettings.setOnClickListener {
-            val selectedLang = if (binding.spinnerLanguage.selectedItem.toString() == "English") "en" else "it"
-            SettingsManager.setLanguage(this, selectedLang)
+        val themeAdapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.themes_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        binding.themeSpinner.adapter = themeAdapter
 
-            val selectedTheme = if (binding.radioGroupTheme.checkedRadioButtonId == R.id.radioLight) "Light" else "Dark"
-            SettingsManager.setTheme(this, selectedTheme)
+        val tempUnitAdapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.temp_units_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        binding.tempUnitSpinner.adapter = tempUnitAdapter
 
-            applyTheme(selectedTheme)
+        // Carica le impostazioni salvate e aggiorna UI
+        viewModel.loadSettings()
 
-            // Ricarica l'activity
-            recreate()
+        viewModel.selectedLanguage.observe(this) { lang ->
+            binding.languageSpinner.setSelection(getLanguagePosition(lang))
+        }
 
-            Toast.makeText(this, "Impostazioni salvate!", Toast.LENGTH_SHORT).show()
+        viewModel.selectedTheme.observe(this) { theme ->
+            binding.themeSpinner.setSelection(getThemePosition(theme))
+        }
 
-            // Riavvia l'app alla schermata principale per applicare lingua ovunque
+        viewModel.selectedTempUnit.observe(this) { tempUnit ->
+            binding.tempUnitSpinner.setSelection(getTempUnitPosition(tempUnit))
+        }
+
+        // Salva le impostazioni al click del bottone
+        binding.saveButton.setOnClickListener {
+            val selectedLang = binding.languageSpinner.selectedItem.toString()
+            val selectedTheme = binding.themeSpinner.selectedItem.toString()
+            val selectedTempUnit = binding.tempUnitSpinner.selectedItem.toString()
+
+            viewModel.saveSettings(selectedLang, selectedTheme, selectedTempUnit)
+
+            Toast.makeText(this, "Impostazioni salvate", Toast.LENGTH_SHORT).show()
+            finish()
+
+            // Riavvia l'app alla schermata principale
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
+            finish()
         }
     }
 
-    private fun applyTheme(theme: String) {
-        if (theme == "Light") {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        }
+    private fun getLanguagePosition(lang: String): Int {
+        val languages = resources.getStringArray(R.array.languages_array)
+        return languages.indexOf(lang).takeIf { it >= 0 } ?: 0
     }
 
+    private fun getThemePosition(theme: String): Int {
+        val themes = resources.getStringArray(R.array.themes_array)
+        return themes.indexOf(theme).takeIf { it >= 0 } ?: 0
+    }
+
+    private fun getTempUnitPosition(tempUnit: String): Int {
+        val tempUnits = resources.getStringArray(R.array.temp_units_array)
+        return tempUnits.indexOf(tempUnit).takeIf { it >= 0 } ?: 0
+    }
 }
-
-
-
-
-

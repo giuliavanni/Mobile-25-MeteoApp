@@ -12,6 +12,7 @@ import com.corsolp.domain.repository.CityRepository
 import com.corsolp.domain.usecase.DeleteCityUseCase
 import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
 import com.corsolp.domain.usecase.FetchWeatherUseCase
+import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
 import kotlinx.coroutines.launch
@@ -23,7 +24,8 @@ class MainViewModel(
     private val deleteCityUseCase: DeleteCityUseCase,
     private val fetchWeatherUseCase: FetchWeatherUseCase,
     private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase,
-    private val cityRepository: CityRepository
+    private val cityRepository: CityRepository,
+    private val getAppLanguageUseCase: GetAppLanguageUseCase
 
 
 ) : AndroidViewModel(application) {
@@ -58,8 +60,13 @@ class MainViewModel(
         }
     }
 
-    fun fetchWeather(city: String, lang: String, apiKey: String) {
+    fun getLanguage(): String {
+        return getAppLanguageUseCase.execute()
+    }
+
+    fun fetchWeather(city: String, apiKey: String) {
         viewModelScope.launch {
+            val lang = getAppLanguageUseCase.execute()
             val result = fetchWeatherUseCase(city, lang, apiKey)
             result.onSuccess { info ->
                 _weather.value = info
@@ -72,8 +79,9 @@ class MainViewModel(
         }
     }
 
-    fun fetchWeatherByCoordinates(lat: Double, lon: Double, lang: String, apiKey: String) {
+    fun fetchWeatherByCoordinates(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
+            val lang = getAppLanguageUseCase.execute()  // Recupera la lingua dal use case
             val result = fetchWeatherByCoordinatesUseCase(lat, lon, lang, apiKey)
             result.onSuccess { _weather.value = it }
             result.onFailure { _error.value = it.message ?: "Errore sconosciuto" }
