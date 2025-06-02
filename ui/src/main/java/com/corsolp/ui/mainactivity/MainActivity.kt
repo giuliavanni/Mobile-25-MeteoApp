@@ -40,6 +40,7 @@ import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
 import com.corsolp.ui.BaseActivity
+import com.corsolp.ui.utils.TemperatureUtils
 import java.util.Locale
 
 class MainActivity : BaseActivity() {
@@ -231,7 +232,10 @@ class MainActivity : BaseActivity() {
 
     private fun updateUI(info: WeatherInfo) {
         binding.textCityName.text = info.cityName
-        binding.textTemperature.text = getString(R.string.temperature_format, info.temperature)
+
+        val (tempToShow, unitSymbol) = TemperatureUtils.convertTemperature(this, info.temperature)
+        binding.textTemperature.text = String.format(Locale.getDefault(), "%.1f %s", tempToShow, unitSymbol)
+
         binding.textDescription.text = info.description
 
         binding.textCityName.visibility = View.VISIBLE

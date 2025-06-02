@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.corsolp.domain.model.ForecastItem
 import com.corsolp.ui.R
+import com.corsolp.ui.utils.TemperatureUtils
 import java.util.Locale
 
 class ForecastAdapter(
@@ -38,7 +39,10 @@ class ForecastAdapter(
             val formattedTime = outputTimeFormat.format(parsedDate)
 
             dateTextView.text = itemView.context.getString(R.string.forecast_date_format, formattedDate, formattedTime)
-            tempTextView.text = itemView.context.getString(R.string.temperature_format, forecast.temp)
+
+            val (convertedTemp, unitSymbol) = TemperatureUtils.convertTemperature(itemView.context, forecast.temp)
+            tempTextView.text = String.format(currentLocale, "%.1f %s", convertedTemp, unitSymbol)
+
             descTextView.text = forecast.description
             humidityTextView.text = itemView.context.getString(R.string.humidity_format, forecast.humidity)
             pressureTextView.text = itemView.context.getString(R.string.pressure_format, forecast.pressure)

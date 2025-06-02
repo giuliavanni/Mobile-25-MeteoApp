@@ -1,28 +1,27 @@
 package com.corsolp.data.di
 
 import android.content.Context
-import com.corsolp.data.settings.SettingsManager
 import com.corsolp.domain.repository.SettingsRepository
 
 class SettingsRepositoryImpl(private val context: Context) : SettingsRepository {
 
+    private val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+
     override fun getLanguage(): String {
-        return SettingsManager.getLanguage(context)
+        return prefs.getString("language", "it") ?: "it"
     }
 
     override fun setLanguage(language: String) {
-        SettingsManager.setLanguage(context, language)
+        prefs.edit().putString("language", language).apply()
     }
 
     override fun getTheme(): String {
-        return SettingsManager.getTheme(context)
+        return prefs.getString("theme", "Light") ?: "Light"
     }
 
     override fun setTheme(theme: String) {
-        SettingsManager.setTheme(context, theme)
+        prefs.edit().putString("theme", theme).apply()
     }
-
-    private val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 
     override fun getTempUnit(): String {
         return prefs.getString("temp_unit", "Celsius") ?: "Celsius"
