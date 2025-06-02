@@ -13,6 +13,7 @@ import com.corsolp.data.di.ForecastRepositoryImpl
 import com.corsolp.data.di.SettingsRepositoryImpl
 import com.corsolp.data.settings.SettingsManager
 import com.corsolp.domain.usecase.FetchForecastUseCase
+import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.BuildConfig
 import com.corsolp.ui.R
@@ -39,7 +40,6 @@ class ForecastActivity : BaseActivity() {
 
         val newContext = newBase.createConfigurationContext(config)
         super.attachBaseContext(newContext)
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +63,9 @@ class ForecastActivity : BaseActivity() {
 
         val repository = ForecastRepositoryImpl()
         val fetchForecastUseCase = FetchForecastUseCase(repository)
-        val factory = ForecastViewModelFactory(fetchForecastUseCase)
+        val settingsRepository = SettingsRepositoryImpl(this)
+        val getAppLanguageUseCase = GetAppLanguageUseCase(settingsRepository)
+        val factory = ForecastViewModelFactory(fetchForecastUseCase, getAppLanguageUseCase)
 
         viewModel = ViewModelProvider(this, factory)[ForecastViewModel::class.java]
 
@@ -75,9 +77,9 @@ class ForecastActivity : BaseActivity() {
             Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
         }
 
-        val lang = SettingsManager.getLanguage(this)
+
         val apiKey = BuildConfig.OPENWEATHER_API_KEY
-        viewModel.loadForecast(city, lang, apiKey)
+        viewModel.loadForecast(city, apiKey)
     }
 }
 

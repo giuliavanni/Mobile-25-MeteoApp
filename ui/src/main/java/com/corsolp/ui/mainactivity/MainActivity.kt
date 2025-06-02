@@ -55,19 +55,6 @@ class MainActivity : BaseActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    override fun attachBaseContext(newBase: Context) {
-        val settingsRepository = SettingsRepositoryImpl(newBase)
-        val lang = settingsRepository.getLanguage()
-        val locale = Locale(lang)
-        Locale.setDefault(locale)
-
-        val config = Configuration()
-        config.setLocale(locale)
-
-        val newContext = newBase.createConfigurationContext(config)
-        super.attachBaseContext(newContext)
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -234,7 +221,8 @@ class MainActivity : BaseActivity() {
         binding.textCityName.text = info.cityName
 
         val (tempToShow, unitSymbol) = TemperatureUtils.convertTemperature(this, info.temperature)
-        binding.textTemperature.text = String.format(Locale.getDefault(), "%.1f %s", tempToShow, unitSymbol)
+        val formattedTemp = String.format(Locale.getDefault(), "%.1f %s", tempToShow, unitSymbol)
+        binding.textTemperature.text = formattedTemp
 
         binding.textDescription.text = info.description
 

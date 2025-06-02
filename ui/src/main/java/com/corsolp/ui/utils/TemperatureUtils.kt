@@ -2,6 +2,7 @@ package com.corsolp.ui.utils
 
 import android.content.Context
 
+
 object TemperatureUtils {
     /**
      * Converte la temperatura da Celsius all'unità preferita salvata nelle SharedPreferences.

@@ -81,7 +81,7 @@ class MainViewModel(
 
     fun fetchWeatherByCoordinates(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
-            val lang = getAppLanguageUseCase.execute()  // Recupera la lingua dal use case
+            val lang = getAppLanguageUseCase.execute()
             val result = fetchWeatherByCoordinatesUseCase(lat, lon, lang, apiKey)
             result.onSuccess { _weather.value = it }
             result.onFailure { _error.value = it.message ?: "Errore sconosciuto" }
