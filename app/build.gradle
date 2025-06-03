@@ -72,10 +72,19 @@ dependencies {
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
+    //implementation libs.osmdroid.android
+    implementation "org.osmdroid:osmdroid-android:6.1.10"
+
     // Room
     implementation "androidx.room:room-runtime:2.6.1"
     kapt "androidx.room:room-compiler:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
+
+    // OkHttp per chiamate HTTP
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
+    // Gson per parsing JSON
+    implementation("com.google.code.gson:gson:2.10.1")
 
 
 }

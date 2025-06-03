@@ -79,4 +79,14 @@ dependencies {
     //Lottie
     implementation 'com.airbnb.android:lottie:5.0.3'
 
+    implementation libs.osmdroid.android.v6114
+    implementation libs.volley
+
+    // OkHttp per chiamate HTTP
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
+    // Gson per parsing JSON
+    implementation("com.google.code.gson:gson:2.10.1")
+
+
 }

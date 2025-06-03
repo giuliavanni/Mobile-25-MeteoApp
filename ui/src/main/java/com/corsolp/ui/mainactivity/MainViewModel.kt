@@ -3,9 +3,6 @@ package com.corsolp.ui.mainactivity
 import android.app.Application
 import androidx.lifecycle.*
 import com.corsolp.data.database.CityEntity
-import com.corsolp.data.mapper.toDomain
-import com.corsolp.data.mapper.toEntity
-import com.corsolp.domain.di.UseCaseProvider.getSavedCitiesUseCase
 import com.corsolp.domain.model.City
 import com.corsolp.domain.model.WeatherInfo
 import com.corsolp.domain.repository.CityRepository
