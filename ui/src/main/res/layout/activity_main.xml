@@ -24,13 +24,17 @@
             android:layout_gravity="center" />
     </androidx.appcompat.widget.Toolbar>
 
-    <EditText
-        android:id="@+id/cityEditText"
-        android:hint="@string/city_insert"
-        android:autofillHints="addressLocality"
+    <AutoCompleteTextView
+        android:id="@+id/cityAutoCompleteTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp" />
+        android:hint="Cerca città"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/resultsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/searchButton"

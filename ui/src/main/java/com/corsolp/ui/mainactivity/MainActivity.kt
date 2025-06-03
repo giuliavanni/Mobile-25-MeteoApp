@@ -1,33 +1,15 @@
 package com.corsolp.ui.mainactivity
 
-import android.Manifest
-import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.corsolp.domain.model.WeatherInfo
 import com.corsolp.data.database.CityEntity
-import com.corsolp.data.settings.SettingsManager
 import com.corsolp.ui.BuildConfig
-import com.corsolp.ui.R
 import com.corsolp.ui.forecast.ForecastActivity
 import com.corsolp.ui.databinding.ActivityMainBinding
 import com.corsolp.ui.map.MapActivity
-import com.corsolp.ui.settings.SettingsActivity
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.corsolp.data.database.AppDatabase
 import com.corsolp.data.di.CityRepositoryImpl
 import com.corsolp.data.di.SettingsRepositoryImpl
@@ -43,6 +25,32 @@ import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.utils.TemperatureUtils
 import java.util.Locale
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.corsolp.domain.model.City
+import com.corsolp.ui.NominatimResult
+import okhttp3.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.gson.Gson
+import java.io.IOException
+import java.util.*
+import kotlin.collections.mutableListOf
+
 class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -55,45 +63,39 @@ class MainActivity : BaseActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    // Autocomplete city search
+    private lateinit var cityAutoCompleteAdapter: ArrayAdapter<String>
+    private val cityResults = mutableListOf<NominatimResult>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
 
-        // ViewBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.weatherIconImageView.visibility = View.GONE
 
-        //Toolbar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // RecyclerView
+        // RecyclerView e CityAdapter
         cityAdapter = CityAdapter(savedCities,
-            onItemClick = { city ->
-                getWeather(city.latitude, city.longitude)
-            },
+            onItemClick = { city -> getWeather(city.latitude, city.longitude) },
             onItemLongClick = { city ->
                 viewModel.deleteCity(city)
                 Toast.makeText(this, "Città eliminata", Toast.LENGTH_SHORT).show()
             },
-            onMapClick = { city -> openMapForCity(city.toEntity())},
+            onMapClick = { city -> openMapForCity(city.toEntity()) },
             onForecastClick = { city ->
                 val intent = Intent(this, ForecastActivity::class.java)
                 intent.putExtra("city_name", city.name)
                 startActivity(intent)
             },
-            onFavoriteToggle = { city ->
-                viewModel.toggleFavorite(city)
-            }
+            onFavoriteToggle = { city -> viewModel.toggleFavorite(city) }
         )
-
-        binding.savedCitiesRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.savedCitiesRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         binding.savedCitiesRecyclerView.adapter = cityAdapter
 
-        // ViewModel: osserva le città salvate
         viewModel.cities.observe(this) { updatedCities ->
             updatedCities?.let {
                 savedCities.clear()
@@ -101,24 +103,67 @@ class MainActivity : BaseActivity() {
                 cityAdapter.notifyDataSetChanged()
             }
         }
-
-        // Carica città iniziali
         viewModel.loadSavedCities()
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         checkLocationPermissionAndFetchWeather()
 
-        // Pulsante ricerca
-        binding.searchButton.setOnClickListener {
-            val cityName = binding.cityEditText.text.toString().trim()
-            if (cityName.isNotEmpty()) {
-                getWeatherAndSave(cityName)
-            } else {
-                Toast.makeText(this, "Inserisci una città", Toast.LENGTH_SHORT).show()
+        // Setup autocomplete
+        cityAutoCompleteAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line)
+        binding.cityAutoCompleteTextView?.setAdapter(cityAutoCompleteAdapter)
+
+        binding.cityAutoCompleteTextView?.threshold = 1
+
+        binding.cityAutoCompleteTextView?.addTextChangedListener(object : TextWatcher {
+            private var timer = Timer()
+            private val DELAY = 400L  // debounce 400ms
+
+            override fun afterTextChanged(s: Editable?) {
+                timer.cancel()
+                timer = Timer()
+                timer.schedule(object : TimerTask() {
+                    override fun run() {
+                        val query = s?.toString()?.trim()
+                        if (!query.isNullOrEmpty() && query.length >= 2) {
+                            searchCities(query) { results ->
+                                runOnUiThread {
+                                    cityResults.clear()
+                                    cityResults.addAll(results)
+                                    val names = results.map { it.display_name }
+
+                                    cityAutoCompleteAdapter = ArrayAdapter(
+                                        this@MainActivity,
+                                        android.R.layout.simple_dropdown_item_1line,
+                                        names
+                                    )
+                                    binding.cityAutoCompleteTextView!!.setAdapter(cityAutoCompleteAdapter)
+                                    cityAutoCompleteAdapter.notifyDataSetChanged()
+                                    binding.cityAutoCompleteTextView!!.showDropDown()
+                                }
+                            }
+                        }
+                    }
+                }, DELAY)
             }
-        binding.cityEditText.text.clear()
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+
+        binding.cityAutoCompleteTextView?.setOnItemClickListener { parent, view, position, id ->
+            val selectedCity = cityResults[position]
+            val lat = selectedCity.lat.toDoubleOrNull()
+            val lon = selectedCity.lon.toDoubleOrNull()
+            if (lat != null && lon != null) {
+                getWeather(lat, lon)
+                val city = selectedCity.toCity()
+                viewModel.saveCity(city)
+            }
+            binding.cityAutoCompleteTextView!!.setText("")
         }
 
-        // osserva meteo e errori
+
         viewModel.weather.observe(this) { info ->
             info?.let { updateUI(it) }
         }
@@ -126,83 +171,93 @@ class MainActivity : BaseActivity() {
         viewModel.error.observe(this) { message ->
             message?.let { showError(it) }
         }
+    }
 
+    // -- Inserisci qui la tua funzione searchCities (con OkHttp + Gson)
+
+    fun searchCities(query: String, onResult: (List<NominatimResult>) -> Unit) {
+        val client = OkHttpClient()
+        val url = "https://nominatim.openstreetmap.org/search?q=${query}&format=json&addressdetails=1&limit=5"
+
+        val request = Request.Builder()
+            .url(url)
+            .header("User-Agent", "YourAppName/1.0")  // importante
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                onResult(emptyList())
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val body = response.body?.string()
+                    if (body != null) {
+                        val gson = Gson()
+                        val results = gson.fromJson(body, Array<NominatimResult>::class.java).toList()
+                        onResult(results)
+                    } else {
+                        onResult(emptyList())
+                    }
+                } else {
+                    onResult(emptyList())
+                }
+            }
+        })
+    }
+
+    fun NominatimResult.toCity(): City {
+        return City(
+            name = this.display_name,
+            latitude = this.lat.toDoubleOrNull() ?: 0.0,
+            longitude = this.lon.toDoubleOrNull() ?: 0.0,
+            isFavorite = false
+        )
     }
 
     private fun checkLocationPermissionAndFetchWeather() {
         val permission = Manifest.permission.ACCESS_FINE_LOCATION
 
-        // Verifica se il permesso è già stato concesso
         if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
             getLastKnownLocation()
         } else {
-            // Se il permesso non è stato concesso, chiedilo
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                // Mostra una spiegazione all'utente prima di richiedere il permesso
                 AlertDialog.Builder(this)
                     .setTitle("Permesso necessario")
                     .setMessage("Per mostrare il meteo nella tua posizione, l'app ha bisogno del permesso di localizzazione.")
                     .setPositiveButton("OK") { _, _ ->
-                        // Richiedi il permesso
                         ActivityCompat.requestPermissions(this, arrayOf(permission), LOCATION_PERMISSION_REQUEST_CODE)
                     }
                     .setNegativeButton("Annulla", null)
                     .show()
             } else {
-                // Se non è necessario mostrare una spiegazione, chiedi direttamente il permesso
                 ActivityCompat.requestPermissions(this, arrayOf(permission), LOCATION_PERMISSION_REQUEST_CODE)
             }
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        // Verifica se il permesso è stato concesso
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permesso concesso, ottieni la posizione
                 getLastKnownLocation()
             } else {
-                // Permesso negato, mostra un messaggio all'utente
                 Toast.makeText(this, "Permesso posizione negato", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun getLastKnownLocation() {
-        // Verifica se i permessi sono concessi
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
-                    // Ottieni la latitudine e longitudine e chiama la funzione per ottenere il meteo
                     getWeather(location.latitude, location.longitude)
                 } else {
                     Toast.makeText(this, "Posizione non disponibile", Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
-            // Se il permesso non è stato concesso, chiedilo
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -210,12 +265,6 @@ class MainActivity : BaseActivity() {
         val apiKey = BuildConfig.OPENWEATHER_API_KEY
         viewModel.fetchWeatherByCoordinates(lat, lon, apiKey)
     }
-
-    private fun getWeatherAndSave(city: String) {
-        val apiKey = BuildConfig.OPENWEATHER_API_KEY
-        viewModel.fetchWeather(city, apiKey)
-    }
-
 
     private fun updateUI(info: WeatherInfo) {
         binding.textCityName.text = info.cityName
@@ -267,7 +316,6 @@ class MainActivity : BaseActivity() {
             cityRepository = cityRepository
         )
     }
-
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
