@@ -7,6 +7,8 @@
 
     <application>
         <activity
+            android:name=".detailedforecast.DetailedForecastActivity" />
+        <activity
             android:name=".forecast.ForecastActivity"
             android:exported="false"
             android:theme="@style/Theme.CorsoLPActivitiesFragments" />

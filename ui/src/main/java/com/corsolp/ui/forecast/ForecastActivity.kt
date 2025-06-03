@@ -1,6 +1,7 @@
 package com.corsolp.ui.forecast
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.TextView
@@ -12,18 +13,21 @@ import androidx.lifecycle.ViewModelProvider
 import com.corsolp.data.di.ForecastRepositoryImpl
 import com.corsolp.data.di.SettingsRepositoryImpl
 import com.corsolp.data.settings.SettingsManager
+import com.corsolp.domain.model.DailyForecast
+import com.corsolp.domain.model.ForecastItem
 import com.corsolp.domain.usecase.FetchForecastUseCase
 import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.BuildConfig
 import com.corsolp.ui.R
+import com.corsolp.ui.detailedforecast.DetailedForecastActivity
 import java.util.Locale
 
 
 class ForecastActivity : BaseActivity() {
 
     private lateinit var forecastRecyclerView: RecyclerView
-    private lateinit var forecastAdapter: ForecastAdapter
+    private lateinit var dailyForecastAdapter: DailyForecastAdapter
     private lateinit var viewModel: ForecastViewModel
     private lateinit var cityNameTextView: TextView
 
@@ -46,14 +50,12 @@ class ForecastActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forecast)
 
+        // Inizializza UI
         forecastRecyclerView = findViewById(R.id.forecastRecyclerView)
-        forecastAdapter = ForecastAdapter(emptyList())
-        forecastRecyclerView.layoutManager = LinearLayoutManager(this)
-        forecastRecyclerView.adapter = forecastAdapter
-
-        city = intent.getStringExtra("city_name") ?: ""
-
         cityNameTextView = findViewById(R.id.cityNameTextView)
+
+        // Recupera la città
+        city = intent.getStringExtra("city_name") ?: ""
         cityNameTextView.text = getString(R.string.city_name_format, city)
 
         if (city.isEmpty()) {
@@ -61,6 +63,26 @@ class ForecastActivity : BaseActivity() {
             return
         }
 
+        // Imposta il RecyclerView con il listener click
+        dailyForecastAdapter = DailyForecastAdapter(emptyList()) { dailyForecast ->
+            // Intent per aprire l'activity dettagliata
+            val filteredList = viewModel.forecastList.value?.filter {
+                it.date.startsWith(dailyForecast.date)
+            } ?: emptyList()
+
+            if (filteredList.isNotEmpty()) {
+                val intent = Intent(this, DetailedForecastActivity::class.java)
+                intent.putParcelableArrayListExtra("detailed_forecast_list", ArrayList(filteredList))
+                intent.putExtra("date_full", dailyForecast.date)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "Nessun dettaglio disponibile", Toast.LENGTH_SHORT).show()
+            }
+        }
+        forecastRecyclerView.layoutManager = LinearLayoutManager(this)
+        forecastRecyclerView.adapter = dailyForecastAdapter
+
+        // Inizializza ViewModel
         val repository = ForecastRepositoryImpl()
         val fetchForecastUseCase = FetchForecastUseCase(repository)
         val settingsRepository = SettingsRepositoryImpl(this)
@@ -69,20 +91,41 @@ class ForecastActivity : BaseActivity() {
 
         viewModel = ViewModelProvider(this, factory)[ForecastViewModel::class.java]
 
+        // Osserva i dati meteo
         viewModel.forecastList.observe(this) { forecastItems ->
-            forecastAdapter.updateData(forecastItems)
+            val summarized = summarizeForecast(forecastItems)
+            dailyForecastAdapter.updateData(summarized)
         }
 
         viewModel.error.observe(this) { errorMessage ->
             Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
         }
 
-
+        // Chiamata API
         val apiKey = BuildConfig.OPENWEATHER_API_KEY
         viewModel.loadForecast(city, apiKey)
     }
+
+    /**
+     * Raggruppa le previsioni orarie in giornaliere, calcolando media temperatura
+     * e condizione prevalente.
+     */
+    private fun summarizeForecast(forecastList: List<ForecastItem>): List<DailyForecast> {
+        return forecastList
+            .groupBy { it.date.substringBefore(" ") }  // yyyy-MM-dd
+            .map { (date, items) ->
+                val avgTemp = items.map { it.temp }.average()
+                val mainCondition = items.groupBy { it.description }
+                    .maxByOrNull { it.value.size }?.key ?: "N/A"
+                val iconUrl = items.firstOrNull()?.iconUrl ?: ""
+
+                DailyForecast(
+                    date = date,
+                    avgTemp = avgTemp,
+                    weatherDescription = mainCondition,
+                    iconUrl = iconUrl
+                )
+            }
+    }
 }
-
-
-
 
