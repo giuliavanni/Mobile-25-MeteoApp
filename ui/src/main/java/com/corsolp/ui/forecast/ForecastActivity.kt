@@ -92,8 +92,7 @@ class ForecastActivity : BaseActivity() {
         viewModel = ViewModelProvider(this, factory)[ForecastViewModel::class.java]
 
         // Osserva i dati meteo
-        viewModel.forecastList.observe(this) { forecastItems ->
-            val summarized = summarizeForecast(forecastItems)
+        viewModel.dailyForecastList.observe(this) { summarized ->
             dailyForecastAdapter.updateData(summarized)
         }
 
@@ -106,34 +105,5 @@ class ForecastActivity : BaseActivity() {
         viewModel.loadForecast(city, apiKey)
     }
 
-    /**
-     * Raggruppa le previsioni orarie in giornaliere, calcolando media temperatura
-     * e condizione prevalente.
-     */
-        private fun summarizeForecast(forecastList: List<ForecastItem>): List<DailyForecast> {
-            return forecastList
-                .groupBy { it.date.substringBefore(" ") }  // yyyy-MM-dd
-                .map { (date, items) ->
-                    val avgTemp = items.map { it.temp }.average()
-
-                    // Escludi l'icona del cielo sereno notturno ("01n")
-                    val filteredItems = items.filterNot { it.iconUrl.contains("01n") }
-
-                    val relevantItems = if (filteredItems.isNotEmpty()) filteredItems else items
-
-                    val mainCondition = relevantItems.groupBy { it.description }
-                        .maxByOrNull { it.value.size }?.key ?: "N/A"
-
-                    val iconUrl = relevantItems.firstOrNull()?.iconUrl ?: ""
-
-                    DailyForecast(
-                        date = date,
-                        avgTemp = avgTemp,
-                        weatherDescription = mainCondition,
-                        iconUrl = iconUrl
-                    )
-                }
-
-        }
 }
 
