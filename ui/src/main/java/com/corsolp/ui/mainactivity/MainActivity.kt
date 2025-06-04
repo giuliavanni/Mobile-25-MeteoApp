@@ -2,12 +2,12 @@ package com.corsolp.ui.mainactivity
 
 import androidx.activity.viewModels
 import com.corsolp.domain.model.WeatherInfo
-import com.corsolp.data.database.CityEntity
+import com.corsolp.data.local.CityEntity
 import com.corsolp.ui.BuildConfig
 import com.corsolp.ui.forecast.ForecastActivity
 import com.corsolp.ui.databinding.ActivityMainBinding
 import com.corsolp.ui.map.MapActivity
-import com.corsolp.data.database.AppDatabase
+import com.corsolp.data.local.AppDatabase
 import com.corsolp.data.repository.CityRepositoryImpl
 import com.corsolp.data.repository.SettingsRepositoryImpl
 import com.corsolp.data.repository.WeatherRepositoryImpl

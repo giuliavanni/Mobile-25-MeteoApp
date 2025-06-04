@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.corsolp.data.database.CityEntity
+import com.corsolp.data.local.CityEntity
 import com.corsolp.data.mapper.toDomain
 import com.corsolp.domain.model.City
 import com.corsolp.ui.R

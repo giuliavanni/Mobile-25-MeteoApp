@@ -1,4 +1,4 @@
-package com.corsolp.data.database
+package com.corsolp.data.local
 
 import androidx.room.*
 import androidx.room.Dao

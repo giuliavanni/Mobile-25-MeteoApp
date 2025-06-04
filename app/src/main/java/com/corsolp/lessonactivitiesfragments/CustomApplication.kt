@@ -1,7 +1,7 @@
 package com.corsolp.lessonactivitiesfragments
 
 import android.app.Application
-import com.corsolp.data.database.AppDatabase
+import com.corsolp.data.local.AppDatabase
 import com.corsolp.data.repository.RepositoryProviderImpl
 import com.corsolp.domain.di.UseCaseProvider
 

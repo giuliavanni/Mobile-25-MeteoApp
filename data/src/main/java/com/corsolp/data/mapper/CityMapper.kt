@@ -1,7 +1,7 @@
 package com.corsolp.data.mapper
 
 import com.corsolp.domain.model.City
-import com.corsolp.data.database.CityEntity
+import com.corsolp.data.local.CityEntity
 
 fun CityEntity.toDomain(): City {
     return City(

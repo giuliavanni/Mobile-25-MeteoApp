@@ -1,7 +1,7 @@
 package com.corsolp.data.repository
 
 
-import com.corsolp.data.database.CityDao
+import com.corsolp.data.local.CityDao
 import com.corsolp.domain.di.RepositoryProvider
 import com.corsolp.domain.repository.CityRepository
 import com.corsolp.domain.repository.ForecastRepository

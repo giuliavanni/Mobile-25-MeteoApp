@@ -1,6 +1,6 @@
 package com.corsolp.data.repository
 
-import com.corsolp.data.database.CityDao
+import com.corsolp.data.local.CityDao
 import com.corsolp.data.mapper.toEntity
 import com.corsolp.domain.model.City
 import com.corsolp.domain.repository.CityRepository
