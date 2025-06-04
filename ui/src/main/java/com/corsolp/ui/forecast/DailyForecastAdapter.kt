@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.corsolp.domain.model.DailyForecast
 import com.bumptech.glide.Glide
+import com.corsolp.ui.R
 import com.corsolp.ui.databinding.ItemDailyForecastBinding
 import com.corsolp.ui.utils.TemperatureUtils
 import java.text.SimpleDateFormat
@@ -48,8 +49,7 @@ class DailyForecastAdapter(
         binding.textDate.text = formattedDate
 
         val (convertedTemp, unit) = TemperatureUtils.convertTemperature(binding.root.context, forecast.avgTemp)
-        binding.textAvgTemp.text = String.format(Locale.getDefault(), "%.1f %s", convertedTemp, unit)
-
+        binding.textAvgTemp.text = binding.root.context.getString(R.string.temperature_display, convertedTemp, unit)
 
         Glide.with(binding.root.context)
             .load(forecast.iconUrl)
