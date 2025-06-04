@@ -1,9 +1,6 @@
 package com.corsolp.ui.mainactivity
 
-import android.content.Context
-import android.content.res.Configuration
 import androidx.activity.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.corsolp.domain.model.WeatherInfo
 import com.corsolp.data.database.CityEntity
 import com.corsolp.ui.BuildConfig
@@ -11,9 +8,9 @@ import com.corsolp.ui.forecast.ForecastActivity
 import com.corsolp.ui.databinding.ActivityMainBinding
 import com.corsolp.ui.map.MapActivity
 import com.corsolp.data.database.AppDatabase
-import com.corsolp.data.di.CityRepositoryImpl
-import com.corsolp.data.di.SettingsRepositoryImpl
-import com.corsolp.data.di.WeatherRepositoryImpl
+import com.corsolp.data.repository.CityRepositoryImpl
+import com.corsolp.data.repository.SettingsRepositoryImpl
+import com.corsolp.data.repository.WeatherRepositoryImpl
 import com.corsolp.data.mapper.toEntity
 import com.corsolp.domain.usecase.DeleteCityUseCase
 import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
@@ -31,13 +28,10 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat

@@ -1,27 +1,20 @@
 package com.corsolp.ui.forecast
 
-import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.corsolp.data.di.ForecastRepositoryImpl
-import com.corsolp.data.di.SettingsRepositoryImpl
-import com.corsolp.data.settings.SettingsManager
-import com.corsolp.domain.model.DailyForecast
-import com.corsolp.domain.model.ForecastItem
+import com.corsolp.data.repository.ForecastRepositoryImpl
+import com.corsolp.data.repository.SettingsRepositoryImpl
 import com.corsolp.domain.usecase.FetchForecastUseCase
 import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.BuildConfig
 import com.corsolp.ui.R
 import com.corsolp.ui.detailedforecast.DetailedForecastActivity
-import java.util.Locale
 
 
 class ForecastActivity : BaseActivity() {

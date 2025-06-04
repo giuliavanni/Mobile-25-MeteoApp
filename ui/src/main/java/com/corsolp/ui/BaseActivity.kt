@@ -5,7 +5,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.corsolp.data.di.SettingsRepositoryImpl
+import com.corsolp.data.repository.SettingsRepositoryImpl
 import java.util.Locale
 
 abstract class BaseActivity : AppCompatActivity() {

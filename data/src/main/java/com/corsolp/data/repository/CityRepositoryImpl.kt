@@ -1,4 +1,4 @@
-package com.corsolp.data.di
+package com.corsolp.data.repository
 
 import com.corsolp.data.database.CityDao
 import com.corsolp.data.mapper.toEntity

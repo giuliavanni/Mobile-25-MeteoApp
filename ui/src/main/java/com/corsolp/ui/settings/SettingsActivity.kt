@@ -1,21 +1,15 @@
 package com.corsolp.ui.settings
 
-import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.corsolp.ui.databinding.ActivitySettingsBinding
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
-import com.corsolp.data.di.SettingsRepositoryImpl
-import com.corsolp.data.settings.SettingsManager
+import com.corsolp.data.repository.SettingsRepositoryImpl
 import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.R
 import com.corsolp.ui.mainactivity.MainActivity
-import java.util.Locale
 
 
 class SettingsActivity : BaseActivity() {
