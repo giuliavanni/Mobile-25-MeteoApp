@@ -35,6 +35,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -43,6 +44,8 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.corsolp.domain.model.City
 import com.corsolp.ui.NominatimResult
+import com.corsolp.ui.R
+import com.corsolp.ui.settings.SettingsActivity
 import okhttp3.*
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -77,6 +80,12 @@ class MainActivity : BaseActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        val settingsButton = findViewById<ImageButton>(R.id.iconSettings)
+        settingsButton.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
 
         // RecyclerView e CityAdapter
         cityAdapter = CityAdapter(savedCities,
