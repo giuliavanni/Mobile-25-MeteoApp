@@ -33,18 +33,6 @@ class ForecastActivity : BaseActivity() {
 
     private lateinit var city: String
 
-    override fun attachBaseContext(newBase: Context) {
-        val settingsRepository = SettingsRepositoryImpl(newBase)
-        val lang = settingsRepository.getLanguage()
-        val locale = Locale(lang)
-        Locale.setDefault(locale)
-
-        val config = Configuration()
-        config.setLocale(locale)
-
-        val newContext = newBase.createConfigurationContext(config)
-        super.attachBaseContext(newContext)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
