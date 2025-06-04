@@ -10,7 +10,7 @@
         android:id="@+id/textDateFull"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Data qui"
+        android:text="@string/forecast_date_format"
         android:textSize="18sp"
         android:textStyle="bold"
         android:padding="16dp"
