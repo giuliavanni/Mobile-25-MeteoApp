@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.corsolp.domain.model.DailyForecast
 import com.bumptech.glide.Glide
 import com.corsolp.ui.databinding.ItemDailyForecastBinding
+import com.corsolp.ui.utils.TemperatureUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -45,7 +46,10 @@ class DailyForecastAdapter(
         val formattedDate = if (date != null) outputFormat.format(date) else forecast.date
 
         binding.textDate.text = formattedDate
-        binding.textAvgTemp.text = String.format(Locale.getDefault(), "%.1f°C", forecast.avgTemp)
+
+        val (convertedTemp, unit) = TemperatureUtils.convertTemperature(binding.root.context, forecast.avgTemp)
+        binding.textAvgTemp.text = String.format(Locale.getDefault(), "%.1f %s", convertedTemp, unit)
+
 
         Glide.with(binding.root.context)
             .load(forecast.iconUrl)
