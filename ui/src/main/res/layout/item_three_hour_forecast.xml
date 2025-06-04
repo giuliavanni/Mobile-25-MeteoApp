@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="23.4°C"
+                android:text="@string/temperature_format"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Clear sky"
+            android:text="@string/weather_description"
             android:textSize="16sp" />
 
         <TextView
@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Humidity: 80%"
+            android:text="@string/humidity_format"
             android:textSize="14sp" />
 
         <TextView
@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Pressure: 1013 hPa"
+            android:text="@string/pressure_format"
             android:textSize="14sp" />
 
         <TextView
@@ -71,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Wind: 5 m/s"
+            android:text="@string/wind_format"
             android:textSize="14sp" />
 
     </LinearLayout>

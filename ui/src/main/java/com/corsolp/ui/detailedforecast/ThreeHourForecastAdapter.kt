@@ -23,6 +23,9 @@ class ThreeHourForecastAdapter(
         val iconImage: ImageView = itemView.findViewById(R.id.imageWeatherIcon)
         val tempText: TextView = itemView.findViewById(R.id.textTemp)
         val descriptionText: TextView = itemView.findViewById(R.id.textDescription)
+        val humidityText: TextView = itemView.findViewById(R.id.textHumidity)
+        val pressureText: TextView = itemView.findViewById(R.id.textPressure)
+        val windText: TextView = itemView.findViewById(R.id.textWind)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder {
@@ -42,6 +45,10 @@ class ThreeHourForecastAdapter(
 
         val (tempConverted, unit) = TemperatureUtils.convertTemperature(holder.itemView.context, item.temp)
         holder.tempText.text = String.format(Locale.getDefault(), "%.1f %s", tempConverted, unit)
+
+        holder.humidityText.text = holder.itemView.context.getString(R.string.humidity_format, item.humidity)
+        holder.pressureText.text = holder.itemView.context.getString(R.string.pressure_format, item.pressure)
+        holder.windText.text = holder.itemView.context.getString(R.string.wind_format, item.windSpeed)
 
         holder.descriptionText.text = item.description
 

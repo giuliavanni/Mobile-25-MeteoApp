@@ -9,12 +9,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.corsolp.domain.model.ForecastItem
+import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.R
 import com.corsolp.ui.forecast.ForecastViewModel
 import com.corsolp.ui.forecast.ForecastViewModelFactory
 import java.util.Locale
 
-class DetailedForecastActivity : AppCompatActivity() {
+class DetailedForecastActivity : BaseActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ThreeHourForecastAdapter
