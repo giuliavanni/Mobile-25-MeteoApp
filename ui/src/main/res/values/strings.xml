@@ -38,6 +38,8 @@
     <string name="pressure_format">Pressure %1$d hPa</string>
     <string name="humidity_format">Humidity: %1$d%%</string>
     <string name="wind_format">Wind speed %1$.1f m/s</string>
+    <string name="temperature_display">🌡️ %1$.1f %2$s</string>
+    <string name="forecast_hour">Hour: </string>
 
     <string name="language">Choose the language: </string>
     <string name="temp_unit"> Temperature Unit: </string>
