@@ -20,6 +20,7 @@ class DetailedForecastActivity : BaseActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ThreeHourForecastAdapter
     private lateinit var textDateFull: TextView
+    private lateinit var viewModel: DetailedForecastViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,27 +31,29 @@ class DetailedForecastActivity : BaseActivity() {
 
         textDateFull = findViewById(R.id.textDateFull)
 
+        viewModel = ViewModelProvider(this)[DetailedForecastViewModel::class.java]
+
+        // Prende i dati dall'Intent
         val date = intent.getStringExtra("date_full") ?: ""
+        val forecastList = intent.getParcelableArrayListExtra<ForecastItem>("detailed_forecast_list") ?: emptyList()
 
-        // Formatta la data (es. Martedì 4 Giugno)
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("EEEE d MMMM", Locale.getDefault())
-
-        val parsedDate = inputFormat.parse(date)
-        val formattedDate = if (parsedDate != null) {
-            outputFormat.format(parsedDate).replaceFirstChar { it.uppercaseChar() }
-        } else date
-
-        textDateFull.text = formattedDate
-
-        val forecastList = intent.getParcelableArrayListExtra<ForecastItem>("detailed_forecast_list")
-
-        if (forecastList != null) {
-            adapter = ThreeHourForecastAdapter(forecastList)
-            recyclerView.adapter = adapter
-        } else {
+        if (forecastList.isEmpty()) {
             Toast.makeText(this, "Nessun dettaglio disponibile", Toast.LENGTH_SHORT).show()
             finish()
+            return
+        }
+
+        // Carica i dati nel ViewModel
+        viewModel.loadData(date, forecastList)
+
+        // Osserva i dati formattati e la lista
+        viewModel.formattedDate.observe(this) { formattedDate ->
+            textDateFull.text = formattedDate
+        }
+
+        viewModel.forecastList.observe(this) { list ->
+            adapter = ThreeHourForecastAdapter(list)
+            recyclerView.adapter = adapter
         }
     }
 }
