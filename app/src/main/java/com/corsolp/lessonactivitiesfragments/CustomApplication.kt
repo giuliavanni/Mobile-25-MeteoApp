@@ -2,7 +2,6 @@ package com.corsolp.lessonactivitiesfragments
 
 import android.app.Application
 import com.corsolp.data.local.AppDatabase
-import com.corsolp.data.repository.RepositoryProviderImpl
 import com.corsolp.domain.di.UseCaseProvider
 
 
@@ -12,11 +11,8 @@ class CustomApplication: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val database = AppDatabase.getDatabase(this)
-        val cityDao = database.cityDao()
-
         UseCaseProvider.setup(
-            repositoryProvider = RepositoryProviderImpl(cityDao)
+            repositoryProvider = com.corsolp.data.di.RepositoryProviderImpl(context = this.applicationContext)
         )
     }
 }

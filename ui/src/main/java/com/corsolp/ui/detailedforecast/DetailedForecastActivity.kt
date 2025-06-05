@@ -1,19 +1,14 @@
 package com.corsolp.ui.detailedforecast
 
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.corsolp.domain.model.ForecastItem
 import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.R
-import com.corsolp.ui.forecast.ForecastViewModel
-import com.corsolp.ui.forecast.ForecastViewModelFactory
-import java.util.Locale
 
 class DetailedForecastActivity : BaseActivity() {
 
@@ -31,6 +26,7 @@ class DetailedForecastActivity : BaseActivity() {
 
         textDateFull = findViewById(R.id.textDateFull)
 
+        // Inizializza il ViewModel
         viewModel = ViewModelProvider(this)[DetailedForecastViewModel::class.java]
 
         // Prende i dati dall'Intent
@@ -57,3 +53,4 @@ class DetailedForecastActivity : BaseActivity() {
         }
     }
 }
+

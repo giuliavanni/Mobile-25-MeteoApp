@@ -24,10 +24,11 @@ class SettingsActivity : BaseActivity() {
         setContentView(binding.root)
 
         // Crea repository e factory
-        val repository = SettingsRepositoryImpl(applicationContext)
+        val repositoryProvider = com.corsolp.data.di.RepositoryProviderImpl(this)
+        val repository = repositoryProvider.settingsRepository
         val factory = SettingsViewModelFactory(repository)
 
-        viewModel = ViewModelProvider(this, factory).get(SettingsViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory)[SettingsViewModel::class.java]
 
         // Imposta gli adapter per gli spinner con le risorse XML
         val languageAdapter = ArrayAdapter.createFromResource(

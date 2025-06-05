@@ -11,6 +11,7 @@ import com.corsolp.domain.usecase.FetchWeatherUseCase
 import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
+import com.corsolp.domain.usecase.ToggleFavoriteCityUseCase
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -20,8 +21,9 @@ class MainViewModel(
     private val deleteCityUseCase: DeleteCityUseCase,
     private val fetchWeatherUseCase: FetchWeatherUseCase,
     private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase,
-    private val cityRepository: CityRepository,
-    private val getAppLanguageUseCase: GetAppLanguageUseCase
+    private val getAppLanguageUseCase: GetAppLanguageUseCase,
+    private val toggleFavoriteCityUseCase: ToggleFavoriteCityUseCase,
+
 
 
 ) : AndroidViewModel(application) {
@@ -86,8 +88,7 @@ class MainViewModel(
 
     fun toggleFavorite(city: City) {
         viewModelScope.launch {
-            val updatedCity = city.copy(isFavorite = !city.isFavorite)
-            cityRepository.updateCity(updatedCity)
+            toggleFavoriteCityUseCase(city)
             loadSavedCities()
         }
     }

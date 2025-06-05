@@ -6,11 +6,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import com.corsolp.data.repository.ForecastRepositoryImpl
-import com.corsolp.data.repository.SettingsRepositoryImpl
-import com.corsolp.domain.usecase.FetchForecastUseCase
-import com.corsolp.domain.usecase.GetAppLanguageUseCase
+import com.corsolp.domain.di.UseCaseProvider
 import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.BuildConfig
 import com.corsolp.ui.R
@@ -64,13 +60,10 @@ class ForecastActivity : BaseActivity() {
         forecastRecyclerView.adapter = dailyForecastAdapter
 
         // Inizializza ViewModel
-        val repository = ForecastRepositoryImpl()
-        val fetchForecastUseCase = FetchForecastUseCase(repository)
-        val settingsRepository = SettingsRepositoryImpl(this)
-        val getAppLanguageUseCase = GetAppLanguageUseCase(settingsRepository)
-        val factory = ForecastViewModelFactory(fetchForecastUseCase, getAppLanguageUseCase)
-
-        viewModel = ViewModelProvider(this, factory)[ForecastViewModel::class.java]
+        viewModel = ForecastViewModel(
+            fetchForecastUseCase = UseCaseProvider.fetchForecastUseCase,
+            getAppLanguageUseCase = UseCaseProvider.getAppLanguageUseCase
+        )
 
         // Osserva i dati meteo
         viewModel.dailyForecastList.observe(this) { summarized ->

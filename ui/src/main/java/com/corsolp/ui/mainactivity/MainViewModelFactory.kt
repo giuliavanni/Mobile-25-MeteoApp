@@ -10,6 +10,7 @@ import com.corsolp.domain.usecase.FetchWeatherUseCase
 import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
+import com.corsolp.domain.usecase.ToggleFavoriteCityUseCase
 
 class MainViewModelFactory(
     private val application: Application,
@@ -20,6 +21,7 @@ class MainViewModelFactory(
     private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase,
     private val cityRepository: CityRepository,
     private val getAppLanguageUseCase: GetAppLanguageUseCase,
+    val toggleFavoriteCityUseCase: ToggleFavoriteCityUseCase
 
     ) : ViewModelProvider.Factory {
 
@@ -33,8 +35,8 @@ class MainViewModelFactory(
                 deleteCityUseCase,
                 fetchWeatherUseCase,
                 fetchWeatherByCoordinatesUseCase,
-                cityRepository,
-                getAppLanguageUseCase
+                getAppLanguageUseCase,
+                toggleFavoriteCityUseCase
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

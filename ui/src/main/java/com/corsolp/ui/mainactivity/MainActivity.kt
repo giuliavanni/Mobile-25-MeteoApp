@@ -35,7 +35,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.corsolp.domain.di.UseCaseProvider
 import com.corsolp.domain.model.City
 import com.corsolp.ui.NominatimResult
 import com.corsolp.ui.R
@@ -54,8 +57,21 @@ class MainActivity : BaseActivity() {
     private lateinit var cityAdapter: CityAdapter
     private val savedCities = mutableListOf<CityEntity>()
 
-    private val viewModel: MainViewModel by viewModels {
-        provideViewModelFactory()
+        private val viewModel : MainViewModel  by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return MainViewModel(
+                    application = application,
+                    getSavedCitiesUseCase = UseCaseProvider.getSavedCitiesUseCase,
+                    saveCityUseCase = UseCaseProvider.saveCityUseCase,
+                    deleteCityUseCase = UseCaseProvider.deleteCityUseCase,
+                    fetchWeatherUseCase = UseCaseProvider.fetchWeatherUseCase,
+                    fetchWeatherByCoordinatesUseCase = UseCaseProvider.fetchWeatherByCoordinatesUseCase,
+                    getAppLanguageUseCase = GetAppLanguageUseCase(SettingsRepositoryImpl(applicationContext)),
+                    toggleFavoriteCityUseCase = UseCaseProvider.toggleFavoriteCityUseCase
+                ) as T
+            }
+        }
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -176,7 +192,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    // -- Inserisci qui la tua funzione searchCities (con OkHttp + Gson)
+    // Funzione searchCities (con OkHttp + Gson)
 
     fun searchCities(query: String, onResult: (List<NominatimResult>) -> Unit) {
         val client = OkHttpClient()
@@ -299,25 +315,6 @@ class MainActivity : BaseActivity() {
             putExtra("longitude", city.longitude)
         }
         startActivity(intent)
-    }
-
-    private fun provideViewModelFactory(): MainViewModelFactory {
-        val dao = AppDatabase.getDatabase(applicationContext).cityDao()
-        val cityRepository = CityRepositoryImpl(dao)
-        val weatherRepository = WeatherRepositoryImpl()
-        val settingsRepository = SettingsRepositoryImpl(applicationContext)
-        val getAppLanguageUseCase = GetAppLanguageUseCase(settingsRepository)
-
-        return MainViewModelFactory(
-            application,
-            getSavedCitiesUseCase = GetSavedCitiesUseCase(cityRepository),
-            saveCityUseCase = SaveCityUseCase(cityRepository),
-            deleteCityUseCase = DeleteCityUseCase(cityRepository),
-            fetchWeatherUseCase = FetchWeatherUseCase(weatherRepository),
-            fetchWeatherByCoordinatesUseCase = FetchWeatherByCoordinatesUseCase(weatherRepository),
-            getAppLanguageUseCase = getAppLanguageUseCase,
-            cityRepository = cityRepository
-        )
     }
 
     companion object {
