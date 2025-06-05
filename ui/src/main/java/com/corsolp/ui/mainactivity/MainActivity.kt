@@ -7,17 +7,9 @@ import com.corsolp.ui.BuildConfig
 import com.corsolp.ui.forecast.ForecastActivity
 import com.corsolp.ui.databinding.ActivityMainBinding
 import com.corsolp.ui.map.MapActivity
-import com.corsolp.data.local.AppDatabase
-import com.corsolp.data.repository.CityRepositoryImpl
 import com.corsolp.data.repository.SettingsRepositoryImpl
-import com.corsolp.data.repository.WeatherRepositoryImpl
 import com.corsolp.data.mapper.toEntity
-import com.corsolp.domain.usecase.DeleteCityUseCase
-import com.corsolp.domain.usecase.FetchWeatherByCoordinatesUseCase
-import com.corsolp.domain.usecase.FetchWeatherUseCase
 import com.corsolp.domain.usecase.GetAppLanguageUseCase
-import com.corsolp.domain.usecase.GetSavedCitiesUseCase
-import com.corsolp.domain.usecase.SaveCityUseCase
 import com.corsolp.ui.BaseActivity
 import com.corsolp.ui.utils.TemperatureUtils
 import java.util.Locale
@@ -40,7 +32,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.corsolp.domain.di.UseCaseProvider
 import com.corsolp.domain.model.City
-import com.corsolp.ui.NominatimResult
+import com.corsolp.data.remote.model.NominatimResult
 import com.corsolp.ui.R
 import com.corsolp.ui.settings.SettingsActivity
 import okhttp3.*

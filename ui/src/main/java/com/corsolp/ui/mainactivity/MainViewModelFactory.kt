@@ -19,7 +19,6 @@ class MainViewModelFactory(
     private val deleteCityUseCase: DeleteCityUseCase,
     private val fetchWeatherUseCase: FetchWeatherUseCase,
     private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase,
-    private val cityRepository: CityRepository,
     private val getAppLanguageUseCase: GetAppLanguageUseCase,
     val toggleFavoriteCityUseCase: ToggleFavoriteCityUseCase
 
