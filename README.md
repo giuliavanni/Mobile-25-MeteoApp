@@ -1,5 +1,5 @@
 <p align="center">
-<img src="images/Screenshot_20250605_184624_MeteoApp.jpg" alt="App Screenshot" width="400"/>   
+<img src="images/App_logo.png" alt="App Screenshot" width="400"/>   
 </p>
 
 ## Project for: Laboratorio di Programmazione di Sistemi Mobili  
