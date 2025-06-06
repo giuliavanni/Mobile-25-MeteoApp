@@ -46,4 +46,10 @@ dependencies {
     implementation "androidx.room:room-ktx:2.6.1"
     kapt "androidx.room:room-compiler:2.6.1"
 
+    // OkHttp per chiamate HTTP
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
+    // Gson per parsing JSON
+    implementation("com.google.code.gson:gson:2.10.1")
+
 }
