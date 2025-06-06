@@ -27,12 +27,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.corsolp.domain.di.UseCaseProvider
 import com.corsolp.domain.model.City
-import com.corsolp.data.remote.model.NominatimResult
+import com.corsolp.domain.model.NominatimResult
 import com.corsolp.ui.R
 import com.corsolp.ui.settings.SettingsActivity
 import okhttp3.*
@@ -60,7 +62,8 @@ class MainActivity : BaseActivity() {
                     fetchWeatherUseCase = UseCaseProvider.fetchWeatherUseCase,
                     fetchWeatherByCoordinatesUseCase = UseCaseProvider.fetchWeatherByCoordinatesUseCase,
                     getAppLanguageUseCase = GetAppLanguageUseCase(SettingsRepositoryImpl(applicationContext)),
-                    toggleFavoriteCityUseCase = UseCaseProvider.toggleFavoriteCityUseCase
+                    toggleFavoriteCityUseCase = UseCaseProvider.toggleFavoriteCityUseCase,
+                    searchCitiesUseCase = UseCaseProvider.searchCitiesUseCase
                 ) as T
             }
         }
@@ -136,22 +139,7 @@ class MainActivity : BaseActivity() {
                     override fun run() {
                         val query = s?.toString()?.trim()
                         if (!query.isNullOrEmpty() && query.length >= 2) {
-                            searchCities(query) { results ->
-                                runOnUiThread {
-                                    cityResults.clear()
-                                    cityResults.addAll(results)
-                                    val names = results.map { it.display_name }
-
-                                    cityAutoCompleteAdapter = ArrayAdapter(
-                                        this@MainActivity,
-                                        android.R.layout.simple_dropdown_item_1line,
-                                        names
-                                    )
-                                    binding.cityAutoCompleteTextView!!.setAdapter(cityAutoCompleteAdapter)
-                                    cityAutoCompleteAdapter.notifyDataSetChanged()
-                                    binding.cityAutoCompleteTextView!!.showDropDown()
-                                }
-                            }
+                            viewModel.searchCities(query)
                         }
                     }
                 }, DELAY)
@@ -160,6 +148,20 @@ class MainActivity : BaseActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        viewModel.searchResults.observe(this) { results ->
+            cityResults.clear()
+            cityResults.addAll(results)
+            val names = results.map { it.display_name }
+            cityAutoCompleteAdapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                names
+            )
+            binding.cityAutoCompleteTextView!!.setAdapter(cityAutoCompleteAdapter)
+            cityAutoCompleteAdapter.notifyDataSetChanged()
+            binding.cityAutoCompleteTextView!!.showDropDown()
+        }
 
 
         binding.cityAutoCompleteTextView?.setOnItemClickListener { parent, view, position, id ->
@@ -182,39 +184,6 @@ class MainActivity : BaseActivity() {
         viewModel.error.observe(this) { message ->
             message?.let { showError(it) }
         }
-    }
-
-    // Funzione searchCities (con OkHttp + Gson)
-
-    fun searchCities(query: String, onResult: (List<NominatimResult>) -> Unit) {
-        val client = OkHttpClient()
-        val url = "https://nominatim.openstreetmap.org/search?q=${query}&format=json&addressdetails=1&limit=5"
-
-        val request = Request.Builder()
-            .url(url)
-            .header("User-Agent", "YourAppName/1.0")  // importante
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                onResult(emptyList())
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val body = response.body?.string()
-                    if (body != null) {
-                        val gson = Gson()
-                        val results = gson.fromJson(body, Array<NominatimResult>::class.java).toList()
-                        onResult(results)
-                    } else {
-                        onResult(emptyList())
-                    }
-                } else {
-                    onResult(emptyList())
-                }
-            }
-        })
     }
 
     fun NominatimResult.toCity(): City {
