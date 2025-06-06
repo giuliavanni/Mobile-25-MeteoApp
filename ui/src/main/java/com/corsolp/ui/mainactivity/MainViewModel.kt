@@ -3,6 +3,7 @@ package com.corsolp.ui.mainactivity
 import android.app.Application
 import androidx.lifecycle.*
 import com.corsolp.domain.model.City
+import com.corsolp.domain.model.NominatimResult
 import com.corsolp.domain.model.WeatherInfo
 import com.corsolp.domain.repository.CityRepository
 import com.corsolp.domain.usecase.DeleteCityUseCase
@@ -11,6 +12,7 @@ import com.corsolp.domain.usecase.FetchWeatherUseCase
 import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
+import com.corsolp.domain.usecase.SearchCitiesUseCase
 import com.corsolp.domain.usecase.ToggleFavoriteCityUseCase
 import kotlinx.coroutines.launch
 
@@ -23,10 +25,8 @@ class MainViewModel(
     private val fetchWeatherByCoordinatesUseCase: FetchWeatherByCoordinatesUseCase,
     private val getAppLanguageUseCase: GetAppLanguageUseCase,
     private val toggleFavoriteCityUseCase: ToggleFavoriteCityUseCase,
-
-
-
-) : AndroidViewModel(application) {
+    private val searchCitiesUseCase: SearchCitiesUseCase
+    ) : AndroidViewModel(application) {
 
     private val _cities = MutableLiveData<List<City>>()
     val cities: LiveData<List<City>> get() = _cities
@@ -36,6 +36,10 @@ class MainViewModel(
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
+
+    private val _searchResults = MutableLiveData<List<NominatimResult>>()
+    val searchResults: LiveData<List<NominatimResult>> = _searchResults
+
 
     fun loadSavedCities() {
         viewModelScope.launch {
@@ -90,6 +94,14 @@ class MainViewModel(
         viewModelScope.launch {
             toggleFavoriteCityUseCase(city)
             loadSavedCities()
+        }
+    }
+
+
+    fun searchCities(query: String) {
+        viewModelScope.launch {
+            val results = searchCitiesUseCase.execute(query)
+            _searchResults.postValue(results)
         }
     }
 
