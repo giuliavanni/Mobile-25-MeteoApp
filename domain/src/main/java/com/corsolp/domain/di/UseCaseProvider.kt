@@ -7,6 +7,7 @@ import com.corsolp.domain.usecase.FetchWeatherUseCase
 import com.corsolp.domain.usecase.GetAppLanguageUseCase
 import com.corsolp.domain.usecase.GetSavedCitiesUseCase
 import com.corsolp.domain.usecase.SaveCityUseCase
+import com.corsolp.domain.usecase.SearchCitiesUseCase
 import com.corsolp.domain.usecase.ToggleFavoriteCityUseCase
 
 object UseCaseProvider {
@@ -19,6 +20,8 @@ object UseCaseProvider {
     lateinit var deleteCityUseCase: DeleteCityUseCase
     lateinit var toggleFavoriteCityUseCase: ToggleFavoriteCityUseCase
     lateinit var getAppLanguageUseCase: GetAppLanguageUseCase
+    lateinit var searchCitiesUseCase: SearchCitiesUseCase
+
 
     fun setup(
         repositoryProvider: RepositoryProvider
@@ -32,5 +35,7 @@ object UseCaseProvider {
         deleteCityUseCase = DeleteCityUseCase(repositoryProvider.cityRepository)
         toggleFavoriteCityUseCase = ToggleFavoriteCityUseCase(repositoryProvider.cityRepository)
         getAppLanguageUseCase = GetAppLanguageUseCase(repositoryProvider.settingsRepository)
+        searchCitiesUseCase = SearchCitiesUseCase(repositoryProvider.cityRepository)
     }
 }
+
