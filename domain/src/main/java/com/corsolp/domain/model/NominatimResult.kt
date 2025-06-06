@@ -1,4 +1,4 @@
-package com.corsolp.data.remote.model
+package com.corsolp.domain.model
 
 data class NominatimResult(
     val display_name: String,
